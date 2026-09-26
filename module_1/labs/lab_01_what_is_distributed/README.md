@@ -1,7 +1,6 @@
 # Lab 01: Centralized vs Distributed — See the Difference
 
 > **Time:** 40 minutes | **Language:** Python | **Infrastructure:** Docker
-> **No prior Python networking experience assumed** — every new concept is explained below before you need it.
 
 ## Objective
 
