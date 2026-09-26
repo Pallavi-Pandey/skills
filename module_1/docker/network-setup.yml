@@ -1,0 +1,119 @@
+# Docker Compose for Distributed Systems Labs
+# Creates a multi-node network for all labs
+
+services:
+  # --- Shared Infrastructure ---
+  redis:
+    image: redis:7-alpine
+    container_name: ds-redis
+    networks:
+      - ds-network
+    ports:
+      - "6379:6379"
+
+  # --- Python Nodes (Labs 01-05) ---
+  python-node1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.python
+    container_name: ds-python-node1
+    hostname: node1
+    volumes:
+      - ../labs:/app/labs
+      - ../solutions:/app/solutions
+      - shared-vol:/shared
+    networks:
+      - ds-network
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+  python-node2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.python
+    container_name: ds-python-node2
+    hostname: node2
+    volumes:
+      - ../labs:/app/labs
+      - ../solutions:/app/solutions
+      - shared-vol:/shared
+    networks:
+      - ds-network
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+  python-node3:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.python
+    container_name: ds-python-node3
+    hostname: node3
+    volumes:
+      - ../labs:/app/labs
+      - ../solutions:/app/solutions
+      - shared-vol:/shared
+    networks:
+      - ds-network
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+  # --- Go Nodes (Labs 05-07) ---
+  go-node1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.go
+    container_name: ds-go-node1
+    hostname: go-node1
+    volumes:
+      - ../labs:/app/labs
+      - ../solutions:/app/solutions
+    networks:
+      - ds-network
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+  go-node2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.go
+    container_name: ds-go-node2
+    hostname: go-node2
+    volumes:
+      - ../labs:/app/labs
+      - ../solutions:/app/solutions
+    networks:
+      - ds-network
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+  # --- Java Node (Lab 08) ---
+  java-node1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.java
+    container_name: ds-java-node1
+    hostname: java-node1
+    volumes:
+      - ../labs:/app/labs
+      - ../solutions:/app/solutions
+    networks:
+      - ds-network
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+volumes:
+  shared-vol:
+    driver: local
+
+networks:
+  ds-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
