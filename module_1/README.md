@@ -30,7 +30,7 @@ Before touching any code, you need a few pieces of software installed on your ma
 | Docker Desktop | 20.x+ | Multi-node container simulation | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
 | Docker Compose | v2.x+ (bundled with Docker Desktop) | Orchestrating lab containers | Included with Docker Desktop |
 | Python | 3.9+ | Labs 01–05 (sockets, RPC, KV store) | [python.org/downloads](https://www.python.org/downloads/) |
-| Go | 1.21+ | Labs 05–07 (gRPC, concurrency, mutex) | [go.dev/dl](https://go.dev/dl/) |
+| Go | 1.25+ | Labs 05–07 (gRPC, concurrency, mutex) | [go.dev/dl](https://go.dev/dl/) |
 | JDK | 17+ (Eclipse Temurin recommended) | Lab 08 (deadlock detection) | [adoptium.net](https://adoptium.net/) |
 | Git | 2.x+ | Version control | [git-scm.com](https://git-scm.com/) |
 
@@ -69,7 +69,7 @@ Once everything above is installed, run these commands to double-check each tool
 docker --version            # Docker version 20.x+
 docker compose version      # Docker Compose version v2.x+
 python3 --version           # Python 3.9+
-go version                  # go1.21+
+go version                  # go1.25+
 javac -version              # javac 17+
 git --version               # git 2.x+
 ```

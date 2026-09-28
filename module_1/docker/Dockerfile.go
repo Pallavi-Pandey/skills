@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine
+FROM golang:1.25-alpine
 WORKDIR /app
 RUN apk add --no-cache protobuf protobuf-dev
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
