@@ -9,6 +9,10 @@
 3. **Resolve** it by changing the order in which locks are acquired.
 4. **Prevent** it a second way, using `tryLock()` with a timeout instead of a blocking lock.
 
+## Why This Matters for Security
+
+A deadlock freezes a program without crashing it — which makes it a quiet, deniable way to cause a **denial-of-service**. If an attacker can control the order or timing in which a service acquires locks on shared resources (for example, by sending specially-crafted concurrent requests), and that service acquires multiple locks in an inconsistent order like `DeadlockDemo.java` does on purpose, the attacker may be able to force exactly the kind of deadlock you're about to create — permanently freezing that part of the service with no exception, no crash, and no obvious error in the logs. This is why the fix you'll implement (consistent lock ordering, or `tryLock()` with a timeout so a thread can back off instead of waiting forever) isn't just a performance best practice — it's a defense against an entire class of resource-exhaustion attacks on concurrent, security-critical code (authentication services, payment processing, anything using locks around shared state).
+
 ---
 
 ## Concepts you need before you start

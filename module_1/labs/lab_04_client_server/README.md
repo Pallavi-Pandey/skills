@@ -7,6 +7,10 @@
 
 Build a real TCP chat server: many people connect to it at once, and a message typed by any one of them is instantly delivered ("broadcast") to everyone else who's connected — a bare-bones version of a group chat app, with no history and no images, just live text. This lab is your hands-on introduction to the **client-server model**, which is the foundation almost every distributed system in this course builds on.
 
+## Why This Matters for Security
+
+Notice what this chat server does *not* do: it never verifies that a client actually is the nickname it claims to be. Anyone who connects can send `NICK admin` and every other client will simply believe them — this is **spoofing**, and it's a real vulnerability class in any protocol that accepts an identity claim without authenticating it. There's also no limit on how many clients can connect at once, which means a single attacker opening thousands of connections could exhaust the server's threads and memory — a classic connection-exhaustion **denial-of-service**. And the shared `self.clients` dictionary you'll protect with a lock is a small preview of a much bigger topic: unsynchronized access to shared state is a common source of real-world security bugs (race conditions, double-spends, TOCTOU vulnerabilities) whenever multiple untrusted parties can trigger concurrent operations on the same data.
+
 ## What You Build
 
 A chat server that:

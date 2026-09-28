@@ -11,6 +11,10 @@ Build a simple key-value store (think of it as a tiny, in-memory database that o
 
 Then you'll benchmark both, kill a machine in each, and see with your own eyes why distributed systems exist.
 
+## Why This Matters for Security
+
+A centralized system is a single point of failure — and a single *target*. If an attacker can knock out or overload the one machine holding all the data (a denial-of-service, or DoS, attack), the entire service goes down at once. That's exactly what you'll see in Part 3's chaos test: kill the one centralized server and 100% of the data becomes unreachable. Spreading data across multiple nodes — the same idea behind Content Delivery Networks and DNS root servers — is a core defense against DoS: an attacker now has to take down *several* independent targets, not one, to cause total outage. This tradeoff between "one thing to defend" and "many things to defend, but no single point of failure" comes up constantly when designing secure, resilient infrastructure.
+
 ---
 
 ## Concepts you need before you start

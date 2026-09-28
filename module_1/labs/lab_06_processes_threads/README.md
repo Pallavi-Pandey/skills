@@ -11,6 +11,10 @@ Experience Go's concurrency model firsthand by building:
 
 Both labs use **goroutines**, Go's built-in tool for running things concurrently. If you've used Python's `threading` module, some of this will feel familiar — but Go's version is cheaper, more common in everyday Go code, and comes with its own vocabulary. If you haven't used threads in Python either, that's fine too — everything is explained from scratch below.
 
+## Why This Matters for Security
+
+Part 1's naive "spawn a goroutine per URL, no limit" approach is more than just a performance lesson — unbounded concurrency is a real denial-of-service vector. If a server spawns one goroutine (or thread, or process) per incoming request with no cap, an attacker can send a flood of requests and exhaust the server's memory or CPU long before any "real" logic runs — this is the mechanism behind many resource-exhaustion DoS attacks. Part 2's worker pool is literally the defensive pattern against this: by fixing the number of workers up front, the system puts a hard ceiling on how much concurrent work an attacker (or just a burst of legitimate traffic) can force it to do at once. Rate limiting and connection pooling in real production systems are direct descendants of this same idea.
+
 ---
 
 ## Concepts you need before you start

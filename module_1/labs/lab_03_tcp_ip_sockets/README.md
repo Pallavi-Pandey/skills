@@ -6,6 +6,10 @@
 
 Build a TCP server and a UDP server "from scratch" using raw sockets (no libraries doing the networking for you), then deliberately compare them so you can *see* — not just read about — the core tradeoff in distributed systems: TCP guarantees your data arrives, in order, but costs more overhead; UDP is fast and cheap but can silently lose data. Finally, you'll build a tiny custom binary protocol on top of TCP, which is basically what every real network protocol (HTTP, gRPC, database wire protocols) does under the hood.
 
+## Why This Matters for Security
+
+This lab is the foundation for a huge amount of network security work. Tools like Wireshark and tcpdump (mentioned in the Session 2 guide) work by reading exactly the kind of raw bytes-on-the-wire you're producing here — once you've hand-parsed a header yourself, packet captures stop looking like magic. The custom protocol you build in Part 3 also has a real vulnerability class baked into it on purpose: it trusts the `LENGTH` field a client sends without validating it against how much data actually arrived. Real protocol parsers that make this same mistake are the root cause of many actual buffer-overread and memory-corruption CVEs — a hostile client can lie about the length field to make a server read past the end of a buffer. Also notice that nothing in this protocol is encrypted or authenticated: anyone who can see the traffic can read it or tamper with it in transit, which is exactly the gap that TLS exists to close on top of raw TCP.
+
 ---
 
 ## Concepts you need before you start

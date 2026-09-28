@@ -6,6 +6,10 @@
 
 Implement the **Token Ring** algorithm: a way for a group of independent processes (nodes) to take turns using a shared resource, one at a time, *without* any of them sharing memory or having a central boss to ask for permission. You'll fill in a few TODOs in `token_ring.go`, run the simulation, and watch the algorithm guarantee that no two nodes ever do the protected work at the same time.
 
+## Why This Matters for Security
+
+Distributed mutual exclusion isn't just an academic exercise — it's what protects things like "only one process may redeem this coupon code," "only one node may write to this shared record right now," or "only one service instance may hold this lease." When mutual exclusion breaks — say, the token gets lost or duplicated, which is exactly what Checkpoint Question 2 asks you to think about — the result is a **race condition**, and race conditions in security-critical code are a genuine, exploitable vulnerability class: a double-spend on a payment, two processes both believing they own the same lock, or a coupon getting redeemed twice because two requests slipped through "at the same time." Understanding exactly how and why an algorithm like Token Ring guarantees exclusivity is the same skill as understanding how an attacker might try to break that guarantee.
+
 ---
 
 ## Concepts you need before you start

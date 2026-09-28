@@ -8,6 +8,10 @@
 1. Build a simple RPC framework **from scratch** in Python, using nothing but sockets and JSON — so you understand what's actually happening underneath every RPC system.
 2. Use **real gRPC** with Protocol Buffers in Go — the industry-standard way most companies actually do this, so you can see what all that hand-written plumbing from Part A buys you when it's automated.
 
+## Why This Matters for Security
+
+RPC and gRPC endpoints are one of the biggest attack surfaces in modern software — every microservice architecture is, underneath, a mesh of machines calling remote functions on each other, and each of those calls is a potential entry point for an attacker. Two things worth noticing as you build this lab: first, in Part A, your server trusts and executes whatever operation name and arguments the client sends it — real RPC/API servers that skip input validation on "internal-only" calls are a recurring source of real vulnerabilities, precisely because "internal" doesn't mean "untrusted-input-free." Second, the gRPC client you'll write in Part B connects using `insecure.NewCredentials()` — meaning the connection has no TLS encryption at all, purely to keep this lab simple. In production, an unencrypted RPC channel between services is trivially readable and tamperable by anyone on the network path, which is why real gRPC deployments almost always run over TLS or mutual TLS (mTLS), where both sides prove their identity with certificates.
+
 ---
 
 ## Concepts you need before you start

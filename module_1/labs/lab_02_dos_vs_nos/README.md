@@ -11,6 +11,10 @@ There are two classic ways an operating system can present a group of networked 
 
 In this lab you'll build a tiny, working simulation of each style and feel the difference with your own hands, instead of just reading about it.
 
+## Why This Matters for Security
+
+Location transparency is convenient, but it also hides where your actual trust and network boundaries are. In NOS mode, every cross-machine request is an explicit, visible network call — an obvious place to add authentication, check permissions, or log access. In DOS mode, the system deliberately hides that a request just crossed the network at all, which is exactly what makes it easy to forget that a "local-looking" read or write might actually be exposed to network-level attacks (eavesdropping, spoofing, man-in-the-middle) that a truly local operation never would be. When you're auditing a real distributed system for security, one of the first questions to ask is: "which of these operations that *look* local are secretly going over a network?"
+
 ## What You'll Do
 
 1. **NOS Mode:** Build a file server + client where node2 and node3 must explicitly say "give me the file that's on node1" over a plain TCP connection.
