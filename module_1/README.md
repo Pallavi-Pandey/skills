@@ -8,6 +8,8 @@
 
 Every lab explains new concepts from scratch, in plain language, before you need them — you just need to be willing to type commands into a terminal and read error messages carefully.
 
+If you'd rather read the theory in one place before (or alongside) the labs, [`module_1_theory.md`](module_1_theory.md) covers all the same topics as a standalone reference, with a "Security Perspective" callout for each one.
+
 A quick note on why three different languages show up across the 8 labs: this module deliberately uses "the best tool per topic" rather than forcing everything into one language, because that's also how real distributed systems are built (different services in different languages talking to each other over the network). Python is used first because its syntax reads closest to plain English, so you can focus on the *distributed systems ideas* rather than fighting the language. Go and Java are introduced later, one small piece at a time, and each new piece of syntax is explained when you first encounter it.
 
 ---
@@ -84,6 +86,7 @@ Here's how everything in this module is organized on disk. You mostly only need 
 module_1/
 ├── README.md                          ← You are here
 ├── agenda.md                          ← Original syllabus
+├── module_1_theory.md                 ← The "20% theory" reference: all topics, with a Security Perspective per section
 │
 ├── guides/                            ← Instructor-facing session guides
 │   ├── session_1_introduction.md      ← 3h: Intro to Distributed Systems
