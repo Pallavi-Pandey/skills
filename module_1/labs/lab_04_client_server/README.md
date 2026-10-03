@@ -11,6 +11,26 @@ Build a real TCP chat server: many people connect to it at once, and a message t
 
 Notice what this chat server does *not* do: it never verifies that a client actually is the nickname it claims to be. Anyone who connects can send `NICK admin` and every other client will simply believe them — this is **spoofing**, and it's a real vulnerability class in any protocol that accepts an identity claim without authenticating it. There's also no limit on how many clients can connect at once, which means a single attacker opening thousands of connections could exhaust the server's threads and memory — a classic connection-exhaustion **denial-of-service**. And the shared `self.clients` dictionary you'll protect with a lock is a small preview of a much bigger topic: unsynchronized access to shared state is a common source of real-world security bugs (race conditions, double-spends, TOCTOU vulnerabilities) whenever multiple untrusted parties can trigger concurrent operations on the same data.
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the 3 Python containers
+cd docker/
+docker compose -f network-setup.yml up -d python-node1 python-node2 python-node3
+
+# 2. Phase 1 — single-threaded server (just confirm it starts/accepts one connection)
+docker exec -it ds-python-node1 python3 /app/labs/lab_04_client_server/chat_server.py
+
+# 3. Phase 2 — multi-client server + client, quick local check
+docker exec -it ds-python-node1 python3 /app/labs/lab_04_client_server/chat_server.py
+docker exec -it ds-python-node1 python3 /app/labs/lab_04_client_server/chat_client.py --host localhost --name Alice
+
+# 4. Phase 3 — server and clients on separate containers
+docker exec -it ds-python-node1 python3 /app/labs/lab_04_client_server/chat_server.py
+docker exec -it ds-python-node2 python3 /app/labs/lab_04_client_server/chat_client.py --host node1 --name Alice
+docker exec -it ds-python-node3 python3 /app/labs/lab_04_client_server/chat_client.py --host node1 --name Bob
+```
+
 ## What You Build
 
 A chat server that:

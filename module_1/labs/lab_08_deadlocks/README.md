@@ -15,6 +15,25 @@ A deadlock freezes a program without crashing it — which makes it a quiet, den
 
 ---
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the Java container
+cd docker/
+docker compose -f network-setup.yml up -d java-node1
+
+# 2. Part 1 — create the deadlock
+docker exec -it ds-java-node1 sh
+cd /app/labs/lab_08_deadlocks/
+javac DeadlockDemo.java && java DeadlockDemo
+
+# 3. Part 2 — while it's hanging, in a SECOND terminal, detect it with jstack
+docker exec -it ds-java-node1 jstack $(jps | grep DeadlockDemo | awk '{print $1}')
+
+# 4. Part 3 — run the fixed version (back in the first terminal, Ctrl+C the hung one first)
+javac DeadlockFixed.java && java DeadlockFixed
+```
+
 ## Concepts you need before you start
 
 You've never written Java before, so this section starts from the absolute basics of what you'll see in the code, then builds up to what a deadlock actually is. Read it fully before opening `DeadlockDemo.java`.

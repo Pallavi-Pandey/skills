@@ -68,6 +68,27 @@ If a client connects to node 1 but asks for a key that node 0 actually owns, nod
 
 ---
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the 3 Python containers
+cd docker/
+docker compose -f network-setup.yml up -d python-node1 python-node2 python-node3
+
+# 2. Part 1 — centralized: start the server, then benchmark it
+docker exec -it ds-python-node1 python3 /app/labs/lab_01_what_is_distributed/centralized_kv.py
+docker exec -it ds-python-node2 python3 /app/labs/lab_01_what_is_distributed/benchmark.py --host node1 --port 5000
+
+# 3. Part 2 — distributed: start all 3 nodes (one command per container), then benchmark
+docker exec -it ds-python-node1 python3 /app/labs/lab_01_what_is_distributed/distributed_kv.py --node-id 0 --port 5000
+docker exec -it ds-python-node2 python3 /app/labs/lab_01_what_is_distributed/distributed_kv.py --node-id 1 --port 5000
+docker exec -it ds-python-node3 python3 /app/labs/lab_01_what_is_distributed/distributed_kv.py --node-id 2 --port 5000
+docker exec -it ds-python-node1 python3 /app/labs/lab_01_what_is_distributed/benchmark.py --distributed --nodes node1:5000,node2:5000,node3:5000
+
+# 4. Part 3 — chaos test: kill a node and see what breaks
+docker stop ds-python-node2
+```
+
 ## What You'll Do
 
 1. Run a centralized KV store → benchmark it → kill it → **everything dies**.

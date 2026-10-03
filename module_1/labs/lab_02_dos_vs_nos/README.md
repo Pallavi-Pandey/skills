@@ -15,6 +15,26 @@ In this lab you'll build a tiny, working simulation of each style and feel the d
 
 Location transparency is convenient, but it also hides where your actual trust and network boundaries are. In NOS mode, every cross-machine request is an explicit, visible network call — an obvious place to add authentication, check permissions, or log access. In DOS mode, the system deliberately hides that a request just crossed the network at all, which is exactly what makes it easy to forget that a "local-looking" read or write might actually be exposed to network-level attacks (eavesdropping, spoofing, man-in-the-middle) that a truly local operation never would be. When you're auditing a real distributed system for security, one of the first questions to ask is: "which of these operations that *look* local are secretly going over a network?"
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the 3 Python containers + Redis
+cd docker/
+docker compose -f network-setup.yml up -d python-node1 python-node2 python-node3 redis
+
+# 2. Part 1 — NOS: file server on node1, clients request it explicitly by name
+docker exec -it ds-python-node1 python3 /app/labs/lab_02_dos_vs_nos/nos_simulation.py --mode server
+docker exec -it ds-python-node2 python3 /app/labs/lab_02_dos_vs_nos/nos_simulation.py --mode client --server node1 --file test.txt
+docker exec -it ds-python-node3 python3 /app/labs/lab_02_dos_vs_nos/nos_simulation.py --mode client --server node1 --file test.txt
+
+# 3. Part 2 — DOS: any node can write/read without naming a server
+docker exec -it ds-python-node1 python3 /app/labs/lab_02_dos_vs_nos/dos_simulation.py --action write --key greeting --value "Hello from node1"
+docker exec -it ds-python-node2 python3 /app/labs/lab_02_dos_vs_nos/dos_simulation.py --action read --key greeting
+docker exec -it ds-python-node1 python3 /app/labs/lab_02_dos_vs_nos/dos_simulation.py --action start-task --task-id job42 --progress 0
+docker exec -it ds-python-node2 python3 /app/labs/lab_02_dos_vs_nos/dos_simulation.py --action resume-task --task-id job42
+docker exec -it ds-python-node3 python3 /app/labs/lab_02_dos_vs_nos/dos_simulation.py --action list
+```
+
 ## What You'll Do
 
 1. **NOS Mode:** Build a file server + client where node2 and node3 must explicitly say "give me the file that's on node1" over a plain TCP connection.
