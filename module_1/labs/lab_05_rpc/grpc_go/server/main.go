@@ -13,7 +13,7 @@ import (
 
 	"google.golang.org/grpc"
 	// TODO: Import your generated calculator package
-	// Hint: After running protoc, import "./calculator"
+	// Hint: After running protoc (see the lab README), import "lab05grpc/calculator"
 )
 
 const port = ":50051"

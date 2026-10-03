@@ -1,5 +1,5 @@
 FROM python:3.11-slim
 WORKDIR /app
-RUN pip install --no-cache-dir grpcio grpcio-tools requests
+RUN pip install --no-cache-dir grpcio grpcio-tools requests redis
 COPY . .
 CMD ["python3"]

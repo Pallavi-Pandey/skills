@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	// TODO: Import your generated calculator package
+	// Hint: After running protoc (see the lab README), import "lab05grpc/calculator"
 )
 
 func main() {
@@ -54,10 +55,13 @@ func main() {
 	//     fmt.Printf("  Fibonacci[%d] = %d\n", resp.Index, resp.Value)
 	// }
 
-	// Suppress unused import warnings during development
+	// Suppress unused import/variable warnings during development —
+	// remove these once you've filled in the TODOs above and actually use them.
 	_ = context.Background
 	_ = io.EOF
 	_ = time.Second
 	_ = insecure.NewCredentials
 	_ = grpc.WithTransportCredentials
+	_ = log.Fatalf
+	_ = serverAddr
 }
