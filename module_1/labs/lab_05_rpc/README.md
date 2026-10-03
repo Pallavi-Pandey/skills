@@ -14,6 +14,31 @@ RPC and gRPC endpoints are one of the biggest attack surfaces in modern software
 
 ---
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the containers: Python nodes for Part A, Go nodes for Part B
+cd docker/
+docker compose -f network-setup.yml up -d python-node1 python-node2 go-node1 go-node2
+
+# 2. Part A — RPC from scratch (Python)
+docker exec -it ds-python-node1 python3 /app/labs/lab_05_rpc/rpc_server.py
+docker exec -it ds-python-node2 python3 /app/labs/lab_05_rpc/rpc_client.py --host node1
+
+# 3. Part B — gRPC (Go): generate code from the .proto file (one-time, on go-node1)
+docker exec -it ds-go-node1 sh
+cd /app/labs/lab_05_rpc/grpc_go/
+protoc --go_out=. --go-grpc_out=. calculator.proto
+
+# 4. Part B — run the gRPC server (on go-node1, same shell as above)
+go run server/main.go
+
+# 5. Part B — run the gRPC client (on go-node2, separate terminal)
+docker exec -it ds-go-node2 sh
+cd /app/labs/lab_05_rpc/grpc_go/
+go run client/main.go --server go-node1:50051
+```
+
 ## Concepts you need before you start
 
 Read this whole section before opening any code. Part A needs concepts 1–3. Part B needs all of them, since it also introduces a brand-new programming language (Go).

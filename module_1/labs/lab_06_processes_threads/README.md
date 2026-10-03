@@ -17,6 +17,22 @@ Part 1's naive "spawn a goroutine per URL, no limit" approach is more than just 
 
 ---
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the Go container
+cd docker/
+docker compose -f network-setup.yml up -d go-node1
+
+# 2. Part 1 — sequential vs concurrent URL fetcher
+docker exec -it ds-go-node1 sh
+cd /app/labs/lab_06_processes_threads/
+go run url_fetcher.go
+
+# 3. Part 2 — worker pool (try different --workers values against the same --jobs)
+go run worker_pool.go --workers 5 --jobs 20
+```
+
 ## Concepts you need before you start
 
 Read this section fully before opening `url_fetcher.go` or `worker_pool.go`. It explains every Go-specific idea the two files rely on.

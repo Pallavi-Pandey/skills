@@ -12,6 +12,26 @@ This lab is the foundation for a huge amount of network security work. Tools lik
 
 ---
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the 2 Python containers
+cd docker/
+docker compose -f network-setup.yml up -d python-node1 python-node2
+
+# 2. Part 1 — TCP echo server
+docker exec -it ds-python-node1 python3 /app/labs/lab_03_tcp_ip_sockets/tcp_echo.py --mode server
+docker exec -it ds-python-node2 python3 /app/labs/lab_03_tcp_ip_sockets/tcp_echo.py --mode client --host node1
+
+# 3. Part 2 — UDP blaster (start the receiver FIRST)
+docker exec -it ds-python-node1 python3 /app/labs/lab_03_tcp_ip_sockets/udp_blaster.py --mode receiver
+docker exec -it ds-python-node2 python3 /app/labs/lab_03_tcp_ip_sockets/udp_blaster.py --mode sender --host node1 --count 1000
+
+# 4. Part 3 — custom binary protocol
+docker exec -it ds-python-node1 python3 /app/labs/lab_03_tcp_ip_sockets/custom_protocol.py --mode server
+docker exec -it ds-python-node2 python3 /app/labs/lab_03_tcp_ip_sockets/custom_protocol.py --mode client --host node1
+```
+
 ## Concepts you need before you start
 
 You don't need to be a networking expert for this lab — you mainly need to understand the nine ideas below. Read this section fully before opening any code. If you did Lab 01, ideas 1, 2, and 8 will be a quick recap; everything else is new.

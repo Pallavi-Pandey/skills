@@ -12,6 +12,20 @@ Distributed mutual exclusion isn't just an academic exercise — it's what prote
 
 ---
 
+## How to Run This Lab (Quick Reference)
+
+```bash
+# 1. Start the Go container
+cd docker/
+docker compose -f network-setup.yml up -d go-node1
+
+# 2. Run the simulation (all 4 nodes run inside this one command)
+docker exec -it ds-go-node1 go run /app/labs/lab_07_mutual_exclusion/token_ring.go --total 4
+
+# Optional: change the ring size / how many critical-section rounds to run
+docker exec -it ds-go-node1 go run /app/labs/lab_07_mutual_exclusion/token_ring.go --total 6 --rounds 5
+```
+
 ## Concepts you need before you start
 
 Read this section fully before opening `token_ring.go`. Nothing here is solved for you — it's just the background you need to understand what the TODOs are asking.
