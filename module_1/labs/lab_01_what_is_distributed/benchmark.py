@@ -5,6 +5,25 @@ Benchmarks centralized and distributed KV stores.
 Measures throughput (ops/sec) and latency (p50, p99).
 """
 
+# What each import is for (docs link = where to read more):
+#   socket      -> opens a fresh connection per command, to measure the
+#                  round-trip time of a single SET/GET
+#                  docs: https://docs.python.org/3/library/socket.html
+#   time        -> time.perf_counter() times each operation precisely,
+#                  so throughput/latency numbers are accurate
+#                  docs: https://docs.python.org/3/library/time.html
+#   argparse    -> reads --host/--port/--distributed/--nodes/--ops from
+#                  the command line
+#                  docs: https://docs.python.org/3/library/argparse.html
+#   statistics  -> statistics.mean() computes average latency from a
+#                  list of individual timings
+#                  docs: https://docs.python.org/3/library/statistics.html
+#   random      -> generates random keys/values so each benchmark run
+#                  uses fresh, non-repeating data
+#                  docs: https://docs.python.org/3/library/random.html
+#   string      -> supplies the character sets (letters, digits) that
+#                  random.choices() picks from
+#                  docs: https://docs.python.org/3/library/string.html
 import socket
 import time
 import argparse

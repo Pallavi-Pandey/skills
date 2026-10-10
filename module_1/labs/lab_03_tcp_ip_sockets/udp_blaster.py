@@ -7,6 +7,15 @@ Demonstrates UDP's unreliable, best-effort delivery.
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket    -> UDP networking this time (SOCK_DGRAM), used by both
+#                the receiver and the sender
+#                docs: https://docs.python.org/3/library/socket.html
+#   argparse  -> reads --mode/--host/--port/--count from the command line
+#                docs: https://docs.python.org/3/library/argparse.html
+#   time      -> time.perf_counter() times how long the sender takes to
+#                blast out all its messages
+#                docs: https://docs.python.org/3/library/time.html
 import socket
 import argparse
 import time

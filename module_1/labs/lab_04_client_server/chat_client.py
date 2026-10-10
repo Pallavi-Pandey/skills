@@ -6,6 +6,17 @@ Connects to the chat server and allows sending/receiving messages.
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> the TCP connection to the chat server
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> runs receive_messages on a background thread, so you
+#                 can type a new message while incoming ones are being
+#                 printed at the same time
+#                 docs: https://docs.python.org/3/library/threading.html
+#   argparse   -> reads --host/--port/--name from the command line
+#                 docs: https://docs.python.org/3/library/argparse.html
+#   sys        -> sys.exit(0) cleanly exits the program when you quit
+#                 docs: https://docs.python.org/3/library/sys.html
 import socket
 import threading
 import argparse

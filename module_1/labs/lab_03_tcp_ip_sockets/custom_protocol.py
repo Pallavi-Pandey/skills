@@ -15,6 +15,15 @@ MSG_TYPE values:
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket    -> TCP networking for the custom-protocol server and client
+#                docs: https://docs.python.org/3/library/socket.html
+#   struct    -> struct.pack()/struct.unpack() convert between Python
+#                values and the exact byte layout this protocol's
+#                header needs (1-byte type + 2-byte length)
+#                docs: https://docs.python.org/3/library/struct.html
+#   argparse  -> reads --mode/--host/--port from the command line
+#                docs: https://docs.python.org/3/library/argparse.html
 import socket
 import struct
 import argparse

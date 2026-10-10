@@ -11,6 +11,19 @@ Each node:
 Fill in the TODOs to make it work.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> low-level TCP networking: both the server's listening socket,
+#                 AND the outgoing connections this node opens when forwarding
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> runs handle_client on its own thread per connection, so
+#                 multiple clients can be served at the same time
+#                 docs: https://docs.python.org/3/library/threading.html
+#   argparse   -> reads --node-id and --port from the command line, so this
+#                 same file can run as node 0, node 1, or node 2
+#                 docs: https://docs.python.org/3/library/argparse.html
+#   hashlib    -> hashes a key (via md5) so every node can agree on which
+#                 one of the 3 nodes owns it, without asking each other
+#                 docs: https://docs.python.org/3/library/hashlib.html
 import socket
 import threading
 import argparse
