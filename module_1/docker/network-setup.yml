@@ -8,8 +8,6 @@ services:
     container_name: ds-redis
     networks:
       - ds-network
-    ports:
-      - "6379:6379"
 
   # --- Python Nodes (Labs 01-05) ---
   python-node1:
