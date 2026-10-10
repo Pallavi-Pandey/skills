@@ -7,6 +7,13 @@ Supports: SET key value | GET key
 Fill in the TODOs to make it work.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> low-level TCP networking: creates the listening socket and
+#                 the per-client connection socket
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> runs handle_client on its own thread per connection, so
+#                 multiple clients can be served at the same time
+#                 docs: https://docs.python.org/3/library/threading.html
 import socket
 import threading
 

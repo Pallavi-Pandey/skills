@@ -10,6 +10,15 @@ Usage:
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket    -> opens a fresh TCP connection to the RPC server for
+#                every single call() — there's no persistent connection
+#                docs: https://docs.python.org/3/library/socket.html
+#   json      -> turns a method call into a JSON request string, and
+#                turns the server's JSON response back into a dict
+#                docs: https://docs.python.org/3/library/json.html
+#   argparse  -> reads --host/--port from the command line
+#                docs: https://docs.python.org/3/library/argparse.html
 import socket
 import json
 import argparse

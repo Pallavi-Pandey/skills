@@ -9,6 +9,24 @@ Fill in the TODOs.
 Prerequisites: pip install redis
 """
 
+# What each import is for (docs link = where to read more):
+#   argparse  -> reads --action/--key/--value/--task-id/--progress from
+#                the command line
+#                docs: https://docs.python.org/3/library/argparse.html
+#   json      -> json.dumps()/json.loads() turn the task_state dict into
+#                a string (and back), since Redis only stores strings
+#                docs: https://docs.python.org/3/library/json.html
+#   time      -> imported but not actually used anywhere in this file —
+#                harmless, but a good example that not every import in
+#                real code ends up needed
+#                docs: https://docs.python.org/3/library/time.html
+#   os        -> os.environ.get("HOSTNAME") reads this container's own
+#                hostname, just to print which node did what
+#                docs: https://docs.python.org/3/library/os.html
+#   redis     -> the actual "shared memory": a client library for Redis,
+#                a separate container every node can read/write (third-
+#                party package, not in Python's standard library)
+#                docs: https://redis-py.readthedocs.io/
 import argparse
 import json
 import time

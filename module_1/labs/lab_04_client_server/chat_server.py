@@ -6,6 +6,15 @@ A TCP chat server that broadcasts messages to all connected clients.
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> TCP networking: the listening socket, plus one
+#                 connection per connected chat client
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> runs each client's conversation on its own thread, so
+#                 the server can keep accepting new clients at any time
+#                 docs: https://docs.python.org/3/library/threading.html
+#   argparse   -> reads --port from the command line
+#                 docs: https://docs.python.org/3/library/argparse.html
 import socket
 import threading
 import argparse

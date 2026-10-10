@@ -6,6 +6,15 @@ A TCP echo server that returns messages in UPPERCASE.
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> low-level TCP networking for both the echo server and
+#                 the client that talks to it
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> lets the server handle each connected client on its
+#                 own thread instead of one at a time
+#                 docs: https://docs.python.org/3/library/threading.html
+#   argparse   -> reads --mode/--host/--port from the command line
+#                 docs: https://docs.python.org/3/library/argparse.html
 import socket
 import threading
 import argparse

@@ -10,6 +10,18 @@ Protocol: JSON over TCP
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> TCP networking: the listening socket, plus one
+#                 connection per connected RPC client
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> runs each client's requests on its own thread, so
+#                 multiple clients can call functions at the same time
+#                 docs: https://docs.python.org/3/library/threading.html
+#   json       -> json.loads() turns the incoming request bytes back
+#                 into a Python dict ({"method": ..., "args": ...}),
+#                 and the response dict gets turned back into a string
+#                 to send out
+#                 docs: https://docs.python.org/3/library/json.html
 import socket
 import threading
 import json

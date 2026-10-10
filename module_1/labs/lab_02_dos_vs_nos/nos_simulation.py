@@ -7,6 +7,17 @@ No transparency — you must know which node has the file.
 Fill in the TODOs.
 """
 
+# What each import is for (docs link = where to read more):
+#   socket     -> low-level TCP networking for the file server and client
+#                 docs: https://docs.python.org/3/library/socket.html
+#   threading  -> lets the file server handle multiple client requests
+#                 at the same time, one thread per connection
+#                 docs: https://docs.python.org/3/library/threading.html
+#   argparse   -> reads --mode/--server/--file from the command line
+#                 docs: https://docs.python.org/3/library/argparse.html
+#   os         -> os.environ.get("HOSTNAME") reads this container's own
+#                 hostname, just to print which node did what
+#                 docs: https://docs.python.org/3/library/os.html
 import socket
 import threading
 import argparse
