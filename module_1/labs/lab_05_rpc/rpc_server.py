@@ -1,27 +1,8 @@
-"""
-Lab 05 - RPC Server from Scratch (Starter Code)
-=================================================
-A simple RPC framework: register functions, call them over TCP.
-
-Protocol: JSON over TCP
-  Request:  {"method": "add", "args": [5, 3], "id": 1}
-  Response: {"result": 8, "error": null, "id": 1}
-
-Fill in the TODOs.
+﻿"""
+Lab 05 - RPC Server from Scratch
+JSON-over-TCP Remote Procedure Call server.
 """
 
-# What each import is for (docs link = where to read more):
-#   socket     -> TCP networking: the listening socket, plus one
-#                 connection per connected RPC client
-#                 docs: https://docs.python.org/3/library/socket.html
-#   threading  -> runs each client's requests on its own thread, so
-#                 multiple clients can call functions at the same time
-#                 docs: https://docs.python.org/3/library/threading.html
-#   json       -> json.loads() turns the incoming request bytes back
-#                 into a Python dict ({"method": ..., "args": ...}),
-#                 and the response dict gets turned back into a string
-#                 to send out
-#                 docs: https://docs.python.org/3/library/json.html
 import socket
 import threading
 import json
@@ -31,57 +12,94 @@ class RPCServer:
     def __init__(self, host="0.0.0.0", port=9000):
         self.host = host
         self.port = port
-        self.functions = {}  # Registry of callable functions
+        self.functions = {}
 
     def register(self, name, func):
         """Register a function that can be called remotely."""
-        # TODO: Store func in self.functions with the given name
-        # TODO: Print that the function was registered
-        pass
+        self.functions[name] = func
+        print(f"Registered function: {name}")
 
     def handle_client(self, conn, addr):
         """Handle an RPC client connection."""
         print(f"[+] RPC client connected: {addr}")
+
         try:
-            while True:
-                data = conn.recv(4096).decode("utf-8").strip()
-                if not data:
-                    break
+            with conn:
+                while True:
+                    data = conn.recv(4096)
+                    if not data:
+                        break
 
-                # TODO: Parse the JSON request
-                # TODO: Extract "method", "args", and "id" from the request
-                # TODO: Look up the method in self.functions
-                # TODO: If found, call it with *args and build a success response
-                # TODO: If not found, build an error response
-                # TODO: Send the JSON response back
-                #
-                # Success response: {"result": <value>, "error": None, "id": <id>}
-                # Error response:   {"result": None, "error": "Method not found", "id": <id>}
-                pass
+                    try:
+                        request = json.loads(data.decode("utf-8").strip())
+                        method = request.get("method")
+                        args = request.get("args", [])
+                        request_id = request.get("id")
 
-        except (ConnectionResetError, json.JSONDecodeError) as e:
-            print(f"  Error: {e}")
+                        if method not in self.functions:
+                            response = {
+                                "result": None,
+                                "error": "Method not found",
+                                "id": request_id,
+                            }
+                        else:
+                            try:
+                                result = self.functions[method](*args)
+                                response = {
+                                    "result": result,
+                                    "error": None,
+                                    "id": request_id,
+                                }
+                            except Exception as error:
+                                response = {
+                                    "result": None,
+                                    "error": str(error),
+                                    "id": request_id,
+                                }
+
+                    except (json.JSONDecodeError, UnicodeDecodeError) as error:
+                        response = {
+                            "result": None,
+                            "error": f"Invalid request: {error}",
+                            "id": None,
+                        }
+
+                    reply = json.dumps(response) + "\n"
+                    conn.sendall(reply.encode("utf-8"))
+
+        except OSError as error:
+            print(f"  Connection error: {error}")
+
         finally:
-            conn.close()
             print(f"[-] RPC client disconnected: {addr}")
 
     def start(self):
         """Start the RPC server."""
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.bind((self.host, self.port))
-        server.listen(5)
-        print(f"=== RPC Server on {self.host}:{self.port} ===")
-        print(f"Registered methods: {list(self.functions.keys())}")
 
-        while True:
-            conn, addr = server.accept()
-            t = threading.Thread(target=self.handle_client, args=(conn, addr))
-            t.daemon = True
-            t.start()
+        try:
+            server.bind((self.host, self.port))
+            server.listen(5)
 
+            print(f"=== RPC Server on {self.host}:{self.port} ===")
+            print(f"Registered methods: {list(self.functions.keys())}")
 
-# ---- Register some functions ----
+            while True:
+                conn, addr = server.accept()
+                thread = threading.Thread(
+                    target=self.handle_client,
+                    args=(conn, addr),
+                    daemon=True,
+                )
+                thread.start()
+
+        except KeyboardInterrupt:
+            print("\nShutting down RPC server.")
+
+        finally:
+            server.close()
+
 
 def add(a, b):
     """Add two numbers."""
@@ -97,6 +115,7 @@ def fibonacci(n):
     """Compute the nth Fibonacci number."""
     if n <= 1:
         return n
+
     a, b = 0, 1
     for _ in range(2, n + 1):
         a, b = b, a + b

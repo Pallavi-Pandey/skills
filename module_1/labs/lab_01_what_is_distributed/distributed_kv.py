@@ -1,36 +1,8 @@
-"""
-Lab 01 - Distributed Key-Value Store (Starter Code)
-====================================================
-A 3-node partitioned key-value store.
-Keys are assigned to nodes via: hash(key) % num_nodes
-
-Each node:
-  - Stores keys assigned to it
-  - Forwards requests for other keys to the correct node
-
-Fill in the TODOs to make it work.
-"""
-
-# What each import is for (docs link = where to read more):
-#   socket     -> low-level TCP networking: both the server's listening socket,
-#                 AND the outgoing connections this node opens when forwarding
-#                 docs: https://docs.python.org/3/library/socket.html
-#   threading  -> runs handle_client on its own thread per connection, so
-#                 multiple clients can be served at the same time
-#                 docs: https://docs.python.org/3/library/threading.html
-#   argparse   -> reads --node-id and --port from the command line, so this
-#                 same file can run as node 0, node 1, or node 2
-#                 docs: https://docs.python.org/3/library/argparse.html
-#   hashlib    -> hashes a key (via md5) so every node can agree on which
-#                 one of the 3 nodes owns it, without asking each other
-#                 docs: https://docs.python.org/3/library/hashlib.html
-import socket
+﻿import socket
 import threading
 import argparse
 import hashlib
 
-
-# Cluster configuration — all nodes must know about each other
 CLUSTER_NODES = {
     0: ("node1", 5000),
     1: ("node2", 5000),
@@ -43,62 +15,52 @@ class DistributedKVNode:
         self.node_id = node_id
         self.host = host
         self.port = port
-        self.store = {}  # Local partition only
+        self.store = {}
         self.num_nodes = len(CLUSTER_NODES)
+        self.lock = threading.Lock()
 
     def get_owning_node(self, key):
-        """Determine which node owns a given key using hash partitioning."""
-        # TODO: Hash the key and return hash_value % self.num_nodes
-        # Hint: Use hashlib.md5(key.encode()).hexdigest() to get a hex hash,
-        #       then int(hex_hash, 16) % self.num_nodes to get the node ID
-        pass
+        hash_value = int(hashlib.md5(key.encode("utf-8")).hexdigest(), 16)
+        return hash_value % self.num_nodes
 
     def forward_to_node(self, node_id, command):
-        """Forward a command to another node and return its response."""
         host, port = CLUSTER_NODES[node_id]
         try:
-            # TODO: Create a TCP socket
-            # TODO: Connect to (host, port)
-            # TODO: Send the command (don't forget to encode + add newline)
-            # TODO: Receive and return the response (decoded)
-            # TODO: Close the socket
-            pass
-        except ConnectionRefusedError:
+            with socket.create_connection((host, port), timeout=5) as sock:
+                sock.sendall((command + "\n").encode("utf-8"))
+                return sock.recv(1024).decode("utf-8")
+        except OSError:
             return f"ERROR: Node {node_id} is unreachable\n"
 
     def process_command(self, command):
-        """Process a SET or GET command, forwarding if necessary."""
         parts = command.split(" ", 2)
         op = parts[0].upper()
 
         if op == "SET" and len(parts) == 3:
-            key = parts[1]
-            value = parts[2]
+            key, value = parts[1], parts[2]
             owner = self.get_owning_node(key)
 
             if owner == self.node_id:
-                # TODO: Store locally and return "OK (stored on node {self.node_id})\n"
-                pass
-            else:
-                # TODO: Forward to the owning node using forward_to_node
-                pass
+                with self.lock:
+                    self.store[key] = value
+                return f"OK (stored on node {self.node_id})\n"
 
-        elif op == "GET" and len(parts) == 2:
+            return self.forward_to_node(owner, command)
+
+        if op == "GET" and len(parts) == 2:
             key = parts[1]
             owner = self.get_owning_node(key)
 
             if owner == self.node_id:
-                # TODO: Look up locally and return value or "NOT_FOUND"
-                pass
-            else:
-                # TODO: Forward to the owning node
-                pass
+                with self.lock:
+                    value = self.store.get(key)
+                return f"{value}\n" if value is not None else "NOT_FOUND\n"
 
-        else:
-            return "ERROR: Unknown command\n"
+            return self.forward_to_node(owner, command)
+
+        return "ERROR: Unknown command\n"
 
     def handle_client(self, conn, addr):
-        """Handle a single client connection."""
         print(f"[Node {self.node_id}] Client connected: {addr}")
         try:
             while True:
@@ -107,32 +69,37 @@ class DistributedKVNode:
                     break
                 response = self.process_command(data)
                 conn.sendall(response.encode("utf-8"))
-        except ConnectionResetError:
+        except (ConnectionResetError, BrokenPipeError):
             pass
         finally:
             conn.close()
 
     def start(self):
-        """Start the node's TCP server."""
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.bind((self.host, self.port))
         server.listen(5)
+
         print(f"[Node {self.node_id}] Listening on {self.host}:{self.port}")
         print(f"[Node {self.node_id}] Cluster: {CLUSTER_NODES}")
 
-        while True:
-            conn, addr = server.accept()
-            t = threading.Thread(target=self.handle_client, args=(conn, addr))
-            t.daemon = True
-            t.start()
+        try:
+            while True:
+                conn, addr = server.accept()
+                thread = threading.Thread(
+                    target=self.handle_client,
+                    args=(conn, addr),
+                    daemon=True,
+                )
+                thread.start()
+        finally:
+            server.close()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Distributed KV Node")
-    parser.add_argument("--node-id", type=int, required=True, help="Node ID (0, 1, or 2)")
-    parser.add_argument("--port", type=int, default=5000, help="Port to listen on")
+    parser.add_argument("--node-id", type=int, required=True)
+    parser.add_argument("--port", type=int, default=5000)
     args = parser.parse_args()
 
-    node = DistributedKVNode(node_id=args.node_id, port=args.port)
-    node.start()
+    DistributedKVNode(node_id=args.node_id, port=args.port).start()
