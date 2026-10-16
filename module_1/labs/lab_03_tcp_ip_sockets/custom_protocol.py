@@ -1,126 +1,183 @@
-"""
-Lab 03 - Custom Binary Protocol (Starter Code)
-================================================
-Design and implement a simple binary protocol over TCP.
+﻿"""
+Lab 03 - Custom Binary Protocol
 
-Protocol Format:
-  [MSG_TYPE: 1 byte] [LENGTH: 2 bytes big-endian] [PAYLOAD: N bytes]
+Message format:
+[MSG_TYPE: 1 byte] [LENGTH: 2 bytes big-endian] [PAYLOAD: N bytes]
 
-MSG_TYPE values:
-  0x01 = PING    (no payload)
-  0x02 = PONG    (no payload)
-  0x03 = DATA    (payload = arbitrary data)
-  0x04 = ERROR   (payload = error message)
-
-Fill in the TODOs.
+Message types:
+0x01 = PING
+0x02 = PONG
+0x03 = DATA
+0x04 = ERROR
 """
 
-# What each import is for (docs link = where to read more):
-#   socket    -> TCP networking for the custom-protocol server and client
-#                docs: https://docs.python.org/3/library/socket.html
-#   struct    -> struct.pack()/struct.unpack() convert between Python
-#                values and the exact byte layout this protocol's
-#                header needs (1-byte type + 2-byte length)
-#                docs: https://docs.python.org/3/library/struct.html
-#   argparse  -> reads --mode/--host/--port from the command line
-#                docs: https://docs.python.org/3/library/argparse.html
 import socket
 import struct
 import argparse
 
-# Protocol constants
 MSG_PING = 0x01
 MSG_PONG = 0x02
 MSG_DATA = 0x03
 MSG_ERROR = 0x04
 
-MSG_NAMES = {MSG_PING: "PING", MSG_PONG: "PONG", MSG_DATA: "DATA", MSG_ERROR: "ERROR"}
+MSG_NAMES = {
+    MSG_PING: "PING",
+    MSG_PONG: "PONG",
+    MSG_DATA: "DATA",
+    MSG_ERROR: "ERROR"
+}
 
 
 def encode_message(msg_type, payload=b""):
-    """
-    Encode a message into our custom protocol format.
-    
-    Returns: bytes in format [type:1][length:2][payload:N]
-    """
-    # TODO: Pack the header: msg_type (1 byte) + length of payload (2 bytes big-endian)
-    # Hint: struct.pack("!BH", msg_type, len(payload))
-    # TODO: Return header + payload
-    pass
+    """Encode a message using a 3-byte header and payload."""
+    if not isinstance(payload, bytes):
+        raise TypeError("Payload must be bytes")
+
+    if not 0 <= msg_type <= 255:
+        raise ValueError("Message type must fit in one byte")
+
+    if len(payload) > 65535:
+        raise ValueError("Payload is too large")
+
+    header = struct.pack("!BH", msg_type, len(payload))
+    return header + payload
+
+
+def receive_exact(sock, size):
+    """Read exactly size bytes from a TCP connection."""
+    data = bytearray()
+
+    while len(data) < size:
+        chunk = sock.recv(size - len(data))
+
+        if not chunk:
+            if not data:
+                return None
+            raise ConnectionError("Connection closed before message was complete")
+
+        data.extend(chunk)
+
+    return bytes(data)
+
+
+def receive_message(sock):
+    """Read and decode one complete protocol message."""
+    header = receive_exact(sock, 3)
+
+    if header is None:
+        return None
+
+    msg_type, payload_length = struct.unpack("!BH", header)
+    payload = receive_exact(sock, payload_length) if payload_length else b""
+
+    if payload is None:
+        raise ConnectionError("Connection closed before payload was received")
+
+    return msg_type, payload
 
 
 def decode_message(data):
-    """
-    Decode a message from our custom protocol format.
-    
-    Returns: (msg_type, payload_bytes)
-    """
-    # TODO: Unpack the header (first 3 bytes): msg_type and payload_length
-    # Hint: struct.unpack("!BH", data[:3])
-    # TODO: Extract the payload (data[3:3+payload_length])
-    # TODO: Return (msg_type, payload)
-    pass
+    """Decode a complete protocol message."""
+    if len(data) < 3:
+        raise ValueError("Message is shorter than the 3-byte header")
+
+    msg_type, payload_length = struct.unpack("!BH", data[:3])
+
+    if len(data) != 3 + payload_length:
+        raise ValueError("Message length does not match its header")
+
+    payload = data[3:]
+    return msg_type, payload
 
 
 def run_server(host="0.0.0.0", port=7002):
-    """Server that speaks our custom protocol."""
+    """Server that handles messages using our custom protocol."""
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((host, port))
     server.listen(5)
+
     print(f"Custom Protocol Server on {host}:{port}")
 
-    while True:
-        conn, addr = server.accept()
-        print(f"[+] Client connected: {addr}")
-        try:
-            while True:
-                # Read header (3 bytes)
-                header = conn.recv(3)
-                if len(header) < 3:
-                    break
+    try:
+        while True:
+            conn, addr = server.accept()
+            print(f"[+] Client connected: {addr}")
 
-                msg_type, payload_len = struct.unpack("!BH", header)
+            with conn:
+                try:
+                    while True:
+                        message = receive_message(conn)
 
-                # Read payload
-                payload = b""
-                if payload_len > 0:
-                    payload = conn.recv(payload_len)
+                        if message is None:
+                            break
 
-                print(f"  Received: {MSG_NAMES.get(msg_type, '?')} | payload={payload.decode('utf-8', errors='replace')}")
+                        msg_type, payload = message
+                        readable = payload.decode("utf-8", errors="replace")
+                        print(
+                            f"Received: {MSG_NAMES.get(msg_type, 'UNKNOWN')} "
+                            f"| payload={readable!r}"
+                        )
 
-                # TODO: Handle the message:
-                #   - If PING → respond with PONG
-                #   - If DATA → respond with DATA containing "ACK: " + original payload
-                #   - Otherwise → respond with ERROR "Unknown message type"
-                pass
+                        if msg_type == MSG_PING:
+                            response = encode_message(MSG_PONG)
+                        elif msg_type == MSG_DATA:
+                            response = encode_message(
+                                MSG_DATA, b"ACK: " + payload
+                            )
+                        else:
+                            response = encode_message(
+                                MSG_ERROR, b"Unknown message type"
+                            )
 
-        except ConnectionResetError:
-            pass
-        finally:
-            conn.close()
+                        conn.sendall(response)
+
+                except (ConnectionError, ConnectionResetError) as error:
+                    print(f"Connection ended: {error}")
+
+                print(f"[-] Client disconnected: {addr}")
+
+    except KeyboardInterrupt:
+        print("\nServer stopping.")
+    finally:
+        server.close()
 
 
 def run_client(host, port=7002):
-    """Client that speaks our custom protocol."""
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
-    print(f"Connected to {host}:{port}")
+    """Send PING and DATA messages and print the responses."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect((host, port))
+        print(f"Connected to {host}:{port}")
 
-    # TODO: Send a PING message using encode_message
-    # TODO: Receive and decode the PONG response
-    # TODO: Print the response
+        sock.sendall(encode_message(MSG_PING))
+        response = receive_message(sock)
 
-    # TODO: Send a DATA message with payload "Hello, custom protocol!"
-    # TODO: Receive and decode the response
-    # TODO: Print the response
+        if response is None:
+            raise ConnectionError("Server closed without replying to PING")
 
-    sock.close()
+        msg_type, payload = response
+        print(f"Response: {MSG_NAMES.get(msg_type, 'UNKNOWN')}")
+
+        sock.sendall(
+            encode_message(MSG_DATA, b"Hello, custom protocol!")
+        )
+        response = receive_message(sock)
+
+        if response is None:
+            raise ConnectionError("Server closed without replying to DATA")
+
+        msg_type, payload = response
+        print(
+            f"Response: {MSG_NAMES.get(msg_type, 'UNKNOWN')} "
+            f"| payload={payload.decode('utf-8', errors='replace')}"
+        )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Custom Binary Protocol")
-    parser.add_argument("--mode", choices=["server", "client"], required=True)
+    parser.add_argument(
+        "--mode", choices=["server", "client"], required=True
+    )
     parser.add_argument("--host", default="localhost")
     parser.add_argument("--port", type=int, default=7002)
     args = parser.parse_args()

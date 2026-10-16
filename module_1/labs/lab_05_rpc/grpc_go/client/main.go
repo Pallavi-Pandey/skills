@@ -1,67 +1,99 @@
-// Lab 05 - gRPC Client (Starter Code)
-// =====================================
-// Calls the Calculator gRPC service.
-//
-// Fill in the TODOs.
-
-package main
+﻿package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"io"
-	"log"
-	"time"
+    "context"
+    "flag"
+    "fmt"
+    "io"
+    "log"
+    "time"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	// TODO: Import your generated calculator package
-	// Hint: After running protoc (see the lab README), import "lab05grpc/calculator"
+    "google.golang.org/grpc"
+    "google.golang.org/grpc/credentials/insecure"
+
+    "lab05grpc/calculator"
 )
 
 func main() {
-	serverAddr := flag.String("server", "localhost:50051", "gRPC server address")
-	flag.Parse()
+    serverAddr := flag.String(
+        "server",
+        "localhost:50051",
+        "gRPC server address",
+    )
+    flag.Parse()
 
-	// TODO: Dial the gRPC server
-	// conn, err := grpc.Dial(*serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	// if err != nil { log.Fatalf(...) }
-	// defer conn.Close()
+    conn, err := grpc.Dial(
+        *serverAddr,
+        grpc.WithTransportCredentials(insecure.NewCredentials()),
+    )
+    if err != nil {
+        log.Fatalf("Failed to connect to server: %v", err)
+    }
+    defer conn.Close()
 
-	// TODO: Create a Calculator client
-	// client := calculator.NewCalculatorClient(conn)
+    client := calculator.NewCalculatorClient(conn)
 
-	// TODO: Set a timeout context
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// defer cancel()
+    ctx, cancel := context.WithTimeout(
+        context.Background(),
+        10*time.Second,
+    )
+    defer cancel()
 
-	fmt.Println("=== gRPC Calculator Client ===\n")
+    fmt.Println("=== gRPC Calculator Client ===")
+    fmt.Println()
 
-	// TODO: Call Calculate with different operations
-	// Example:
-	// resp, err := client.Calculate(ctx, &calculator.CalcRequest{
-	//     Operation: "add",
-	//     A: 42,
-	//     B: 18,
-	// })
-	// fmt.Printf("42 + 18 = %.0f\n", resp.Result)
+    operations := []struct {
+        name string
+        a    float64
+        b    float64
+    }{
+        {"add", 42, 18},
+        {"subtract", 42, 18},
+        {"multiply", 7, 6},
+        {"divide", 42, 6},
+        {"divide", 10, 0},
+    }
 
-	// TODO: Call FibonacciStream to get streaming results
-	// stream, err := client.FibonacciStream(ctx, &calculator.FibRequest{Count: 10})
-	// for {
-	//     resp, err := stream.Recv()
-	//     if err == io.EOF { break }
-	//     fmt.Printf("  Fibonacci[%d] = %d\n", resp.Index, resp.Value)
-	// }
+    for _, op := range operations {
+        resp, err := client.Calculate(ctx, &calculator.CalcRequest{
+            Operation: op.name,
+            A:         op.a,
+            B:         op.b,
+        })
+        if err != nil {
+            log.Printf("Calculation %s failed: %v", op.name, err)
+            continue
+        }
 
-	// Suppress unused import/variable warnings during development —
-	// remove these once you've filled in the TODOs above and actually use them.
-	_ = context.Background
-	_ = io.EOF
-	_ = time.Second
-	_ = insecure.NewCredentials
-	_ = grpc.WithTransportCredentials
-	_ = log.Fatalf
-	_ = serverAddr
+        if resp.Error != "" {
+            fmt.Printf("%s(%.0f, %.0f): Error: %s\n",
+                op.name, op.a, op.b, resp.Error)
+        } else {
+            fmt.Printf("%s(%.0f, %.0f) = %.2f\n",
+                op.name, op.a, op.b, resp.Result)
+        }
+    }
+
+    fmt.Println("\n--- Fibonacci Stream ---")
+
+    stream, err := client.FibonacciStream(
+        ctx,
+        &calculator.FibRequest{Count: 10},
+    )
+    if err != nil {
+        log.Fatalf("Failed to start Fibonacci stream: %v", err)
+    }
+
+    for {
+        resp, err := stream.Recv()
+        if err == io.EOF {
+            fmt.Println("Fibonacci stream completed.")
+            break
+        }
+        if err != nil {
+            log.Fatalf("Failed to receive Fibonacci number: %v", err)
+        }
+
+        fmt.Printf("Fibonacci[%d] = %d\n", resp.Index, resp.Value)
+    }
 }

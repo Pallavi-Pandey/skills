@@ -56,9 +56,9 @@ func fetchSequential(urls []string) {
 	for i, url := range urls {
 		size, err := fetchURL(url)
 		if err != nil {
-			fmt.Printf("  [%d] ERROR: %s → %v\n", i, url, err)
+			fmt.Printf("  [%d] ERROR: %s â†’ %v\n", i, url, err)
 		} else {
-			fmt.Printf("  [%d] OK: %s → %d bytes\n", i, url, size)
+			fmt.Printf("  [%d] OK: %s â†’ %d bytes\n", i, url, size)
 		}
 	}
 
@@ -67,32 +67,30 @@ func fetchSequential(urls []string) {
 }
 
 func fetchConcurrent(urls []string) {
-	fmt.Println("\n=== CONCURRENT FETCH (goroutines) ===")
-	start := time.Now()
+    fmt.Println("\n=== CONCURRENT FETCH (goroutines) ===")
+    start := time.Now()
 
-	// TODO: Create a sync.WaitGroup
-	// TODO: For each URL, launch a goroutine that:
-	//   1. Calls wg.Add(1) before launching
-	//   2. Defers wg.Done() inside the goroutine
-	//   3. Calls fetchURL(url)
-	//   4. Prints the result
-	// TODO: Wait for all goroutines to finish with wg.Wait()
+    var wg sync.WaitGroup
 
-	// HINT:
-	// var wg sync.WaitGroup
-	// for i, url := range urls {
-	//     wg.Add(1)
-	//     go func(idx int, u string) {
-	//         defer wg.Done()
-	//         // fetch and print...
-	//     }(i, url)
-	// }
-	// wg.Wait()
+    for i, url := range urls {
+        wg.Add(1)
 
-	_ = sync.WaitGroup{} // Remove this line when you implement
+        go func(idx int, u string) {
+            defer wg.Done()
 
-	elapsed := time.Since(start)
-	fmt.Printf("\nConcurrent: %d URLs in %v\n", len(urls), elapsed)
+            size, err := fetchURL(u)
+            if err != nil {
+                fmt.Printf("  [%d] ERROR: %s -> %v\n", idx, u, err)
+            } else {
+                fmt.Printf("  [%d] OK: %s -> %d bytes\n", idx, u, size)
+            }
+        }(i, url)
+    }
+
+    wg.Wait()
+
+    elapsed := time.Since(start)
+    fmt.Printf("\nConcurrent: %d URLs in %v\n", len(urls), elapsed)
 }
 
 func main() {
