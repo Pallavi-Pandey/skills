@@ -23,6 +23,7 @@ class CentralizedKVStore:
         self.host = host
         self.port = port
         self.store = {}  # Our in-memory key-value store
+        self.lock = threading.Lock()
 
     def handle_client(self, conn, addr):
         """Handle a single client connection."""
@@ -53,28 +54,33 @@ class CentralizedKVStore:
         op = parts[0].upper()
 
         if op == "SET" and len(parts) == 3:
-            # TODO: Store parts[1] as key and parts[2] as value in self.store
-            # TODO: Return "OK\n"
-            pass
+            with self.lock:
+                self.store[parts[1]] = parts[2]
+            return "OK\n"
 
         elif op == "GET" and len(parts) == 2:
-            # TODO: Look up parts[1] in self.store
-            # TODO: Return the value + "\n" if found, or "NOT_FOUND\n" if not
-            pass
+            with self.lock:
+                value = self.store.get(parts[1])
+            if value is not None:
+                return f"{value}\n"
+            return "NOT_FOUND\n"
 
         else:
             return "ERROR: Unknown command\n"
 
     def start(self):
         """Start the TCP server."""
-        # TODO: Create a TCP socket (socket.AF_INET, socket.SOCK_STREAM)
-        # TODO: Set SO_REUSEADDR option
-        # TODO: Bind to (self.host, self.port)
-        # TODO: Listen for connections (backlog=5)
-        # TODO: In a loop:
-        #   - Accept a connection
-        #   - Spawn a thread to handle_client
-        pass
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind((self.host, self.port))
+        server.listen(5)
+        print(f"=== Centralized KV Store on {self.host}:{self.port} ===")
+
+        while True:
+            conn, addr = server.accept()
+            client_thread = threading.Thread(target=self.handle_client, args=(conn, addr))
+            client_thread.daemon = True
+            client_thread.start()
 
 
 if __name__ == "__main__":
