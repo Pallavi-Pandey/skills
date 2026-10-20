@@ -80,17 +80,13 @@ git --version               # git 2.x+
 
 ## Repository Structure
 
-Here's how everything in this module is organized on disk. You mostly only need `guides/` (if you're an instructor) and `labs/` (if you're a student working through the exercises) — `solutions/` and `docker/` are supporting material you'll be pointed to when needed.
+Here's how everything in this module is organized on disk. You mostly only need `labs/`, where you work through the exercises — `solutions/` and `docker/` are supporting material you'll be pointed to when needed.
 
 ```
 module_1/
 ├── README.md                          ← You are here
 ├── agenda.md                          ← Original syllabus
 ├── module_1_theory.md                 ← The "20% theory" reference: all topics, with a Security Perspective per section
-│
-├── guides/                            ← Instructor-facing session guides
-│   ├── session_1_introduction.md      ← 3h: Intro to Distributed Systems
-│   └── session_2_communication.md     ← 5h: Communication & Synchronization
 │
 ├── labs/                              ← Starter code with TODOs (student-facing)
 │   ├── lab_01_what_is_distributed/    ← Centralized vs Distributed comparison

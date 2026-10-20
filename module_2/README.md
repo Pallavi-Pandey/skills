@@ -15,25 +15,21 @@ module_2/
 ├── README.md                          ← You are here
 ├── agenda.md                          ← Original syllabus
 │
-├── theory/                            ← The main content: one file per topic
-│   ├── README.md                      ← Contents, part intros, summary table
-│   ├── 01_fault_classification.md
-│   ├── 02_fault_tolerance_approaches.md
-│   ├── 03_consistency.md
-│   ├── 04_the_cia_triad.md
-│   ├── 05_threats.md
-│   ├── 06_authentication.md
-│   ├── 07_authorization.md
-│   ├── 08_encryption.md
-│   ├── 09_secure_communication_protocols.md
-│   ├── 10_access_control.md
-│   ├── 11_trust_management.md
-│   ├── 12_privacy_preserving.md
-│   └── 13_auditing_and_monitoring.md
-│
-└── guides/                            ← Instructor-facing session guides
-    ├── session_1_fault_tolerance.md   ← Fault Classification, Fault Tolerance Approaches, Consistency
-    └── session_2_security.md          ← CIA Triad through Auditing and Monitoring
+└── theory/                            ← The main content: one file per topic
+    ├── README.md                      ← Contents, part intros, summary table
+    ├── 01_fault_classification.md
+    ├── 02_fault_tolerance_approaches.md
+    ├── 03_consistency.md
+    ├── 04_the_cia_triad.md
+    ├── 05_threats.md
+    ├── 06_authentication.md
+    ├── 07_authorization.md
+    ├── 08_encryption.md
+    ├── 09_secure_communication_protocols.md
+    ├── 10_access_control.md
+    ├── 11_trust_management.md
+    ├── 12_privacy_preserving.md
+    └── 13_auditing_and_monitoring.md
 ```
 
 ---
@@ -42,7 +38,6 @@ module_2/
 
 1. Start at [`theory/README.md`](theory/README.md) and read the 13 topic files in order, or pick a single topic — each file is self-contained enough to teach on its own, but they build on each other (especially within Part A, and within Part B).
 2. Each major topic has a **Case Study** or **Discussion Prompt** callout — these are designed to be the centerpiece of a session, not an afterthought. Real incidents (Equifax, Mirai, SolarWinds, the Target breach, Netflix's Chaos Monkey, Amazon's shopping-cart story) make abstract theory memorable, and every one of them is something students can look up and read more about afterward.
-3. Use the two session guides in `guides/` for suggested pacing, talking points, and additional discussion angles beyond what's in the topic files themselves.
 
 ## Session Breakdown
 
