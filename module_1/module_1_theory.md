@@ -39,7 +39,7 @@ The key word here is **autonomous** — each computer has its own processor, mem
 - **Social Media** — Facebook, Instagram serve billions of users from thousands of servers worldwide
 - **Blockchain/Cryptocurrency** — Bitcoin is a fully distributed system with no central authority
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 Distributed systems introduce a larger **attack surface**. Since data travels across networks between nodes, attackers can intercept, modify, or spoof communications. Understanding distributed systems is essential for cybersecurity professionals because securing these systems requires knowledge of how they communicate, synchronize, and handle failures.
 
@@ -121,7 +121,7 @@ Distributed systems rely on specific hardware configurations. The two main class
 | **Homogeneous Multicomputer (MPP)** | Identical machines, tightly connected, same location | Supercomputers (e.g., in research labs) |
 | **Heterogeneous Multicomputer** | Different machines, loosely connected, different locations | The Internet, a university network |
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 In shared memory systems, if one process is compromised, it could potentially read or corrupt another process's data in shared memory — a classic **privilege escalation** risk. In message-passing systems, messages can be intercepted (**eavesdropping**) or tampered with (**man-in-the-middle attacks**), making encryption and authentication essential.
 
@@ -260,7 +260,7 @@ When you send a message:
 3. At the **Physical layer**, data is transmitted as bits over the wire/airwaves.
 4. At the receiving end, each layer removes its header as data moves up — this is called **decapsulation**.
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 Security mechanisms operate at different layers:
 - **Layer 2:** MAC address filtering, port security
@@ -329,7 +329,7 @@ Literally everywhere on the Internet:
 - When you send an email → SMTP over TCP over IP
 - When you type a URL → DNS query over UDP over IP
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 TCP/IP was designed for **reliability, not security**. This creates vulnerabilities:
 - **IP Spoofing:** Attacker forges the source IP address to impersonate another machine.
@@ -393,7 +393,7 @@ Client                          Server
 | **N-Tier** | Multiple specialized layers | Microservices architecture |
 | **Peer-to-Peer** | No dedicated server — every node is both client and server | BitTorrent, Bitcoin |
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 The client-server model centralizes security at the server, but also creates a **single point of attack**:
 - **DDoS Attacks:** Overwhelming the server with requests from many clients.
@@ -465,7 +465,7 @@ Client Machine                          Server Machine
 | **Partial Failure** | The server may crash after executing the function but before sending the response — did it succeed or not? |
 | **Security** | Data travels over the network and can be intercepted or tampered with |
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 RPC is a significant attack vector in distributed systems:
 - **Unauthorized RPC calls:** If the server doesn't authenticate the caller, anyone can invoke remote functions.
@@ -590,7 +590,7 @@ Multiple threads within the same process share:
 - **Database Servers:** Multiple threads serve different client queries simultaneously.
 - **Multithreaded Clients:** A web browser uses separate threads for rendering the page, downloading images, and running JavaScript.
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 Threads sharing memory is both powerful and dangerous:
 - **Race Conditions:** If two threads access shared data simultaneously without proper synchronization, the result can be unpredictable — this can be exploited to bypass security checks.
@@ -661,7 +661,7 @@ Process A:                    Process B:
 | **Distributed** | 2(n-1) | No | Yes (timestamp-based) |
 | **Token Ring** | 1 to n-1 | Yes (token loss) | Yes (round-robin) |
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 Mutual exclusion is critical for security:
 - **TOCTOU Attacks (Time-of-Check to Time-of-Use):** An attacker exploits the gap between checking a condition and acting on it. Proper mutual exclusion prevents this.
@@ -742,7 +742,7 @@ Deadlocks are **harder to detect** in distributed systems because:
 - **Distributed Detection:** Each node maintains a local Wait-For Graph. Nodes exchange information to detect global cycles. (More complex but more robust.)
 - **Hierarchical Detection:** Nodes are organized into a hierarchy; detection happens at multiple levels.
 
-#### 🔐 Security Perspective
+#### Security Perspective
 
 Deadlocks can be **weaponized** as a form of Denial of Service (DoS):
 - An attacker deliberately creates conditions that cause deadlocks in a server, making it unresponsive.

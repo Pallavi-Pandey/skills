@@ -4,7 +4,7 @@
 > **Audience:** Same as Module 1 — M.Tech Cyber Security students.
 > **Builds on:** Module 1 (especially Lab 01's replication/failure concepts and the CAP-theorem framing already introduced there).
 
-This module covers two topics that turn out to be the same discipline viewed from two angles: **keeping a distributed system working despite components that fail** (Part A), and **keeping it trustworthy despite components that get attacked** (Part B). By the end, a "monitoring system" and a "fault detector" should start to look like the same idea to you — Section 13 makes that connection explicit.
+This module covers two topics that turn out to be the same discipline viewed from two angles: **keeping a distributed system working despite components that fail** (Part A), and **keeping it trustworthy despite components that get attacked** (Part B). By the end, a "monitoring system" and a "fault detector" should start to look like the same idea to you — [Topic 13](theory/13_auditing_and_monitoring.md) makes that connection explicit.
 
 ---
 
@@ -14,7 +14,22 @@ This module covers two topics that turn out to be the same discipline viewed fro
 module_2/
 ├── README.md                          ← You are here
 ├── agenda.md                          ← Original syllabus
-├── module_2_theory.md                 ← The main content: all 13 topics, case studies, analogies
+│
+├── theory/                            ← The main content: one file per topic
+│   ├── README.md                      ← Contents, part intros, summary table
+│   ├── 01_fault_classification.md
+│   ├── 02_fault_tolerance_approaches.md
+│   ├── 03_consistency.md
+│   ├── 04_the_cia_triad.md
+│   ├── 05_threats.md
+│   ├── 06_authentication.md
+│   ├── 07_authorization.md
+│   ├── 08_encryption.md
+│   ├── 09_secure_communication_protocols.md
+│   ├── 10_access_control.md
+│   ├── 11_trust_management.md
+│   ├── 12_privacy_preserving.md
+│   └── 13_auditing_and_monitoring.md
 │
 └── guides/                            ← Instructor-facing session guides
     ├── session_1_fault_tolerance.md   ← Fault Classification, Fault Tolerance Approaches, Consistency
@@ -25,16 +40,16 @@ module_2/
 
 ## How to Use This Module
 
-1. Read [`module_2_theory.md`](module_2_theory.md) start to finish, or topic by topic — each of the 13 sections is self-contained enough to teach on its own, but they build on each other (especially within Part A, and within Part B).
-2. Each major topic has a **📖 Case Study** or **💭 Discussion Prompt** callout — these are designed to be the centerpiece of a session, not an afterthought. Real incidents (Equifax, Mirai, SolarWinds, the Target breach, Netflix's Chaos Monkey, Amazon's shopping-cart story) make abstract theory memorable, and every one of them is something students can look up and read more about afterward.
-3. Use the two session guides in `guides/` for suggested pacing, talking points, and additional discussion angles beyond what's in the theory doc itself.
+1. Start at [`theory/README.md`](theory/README.md) and read the 13 topic files in order, or pick a single topic — each file is self-contained enough to teach on its own, but they build on each other (especially within Part A, and within Part B).
+2. Each major topic has a **Case Study** or **Discussion Prompt** callout — these are designed to be the centerpiece of a session, not an afterthought. Real incidents (Equifax, Mirai, SolarWinds, the Target breach, Netflix's Chaos Monkey, Amazon's shopping-cart story) make abstract theory memorable, and every one of them is something students can look up and read more about afterward.
+3. Use the two session guides in `guides/` for suggested pacing, talking points, and additional discussion angles beyond what's in the topic files themselves.
 
 ## Session Breakdown
 
-| Session | Covers | Theory doc sections |
+| Session | Covers | Topic files |
 |---|---|---|
-| **Session 1: Fault Tolerance & Consistency** | Crash vs Byzantine faults, proactive/reactive fault tolerance, the consistency spectrum, CAP theorem | §1–3 |
-| **Session 2: Security** | CIA triad, threats, authentication, authorization, encryption, secure protocols, access control, trust, privacy, auditing | §4–13 |
+| **Session 1: Fault Tolerance & Consistency** | Crash vs Byzantine faults, proactive/reactive fault tolerance, the consistency spectrum, CAP theorem | [01](theory/01_fault_classification.md)–[03](theory/03_consistency.md) |
+| **Session 2: Security** | CIA triad, threats, authentication, authorization, encryption, secure protocols, access control, trust, privacy, auditing | [04](theory/04_the_cia_triad.md)–[13](theory/13_auditing_and_monitoring.md) |
 
 These are rough pacing guides, not a fixed clock schedule — some topics (CAP theorem, TLS handshakes) reliably need more discussion time than others.
 
