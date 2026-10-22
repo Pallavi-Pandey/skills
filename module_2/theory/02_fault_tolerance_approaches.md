@@ -6,7 +6,7 @@ There are two fundamentally different philosophies for dealing with faults: **ac
 
 ## Proactive: Self-Healing
 
-A self-healing system continuously monitors its own health and automatically corrects problems *before* they become outages — restarting a misbehaving process, replacing a node whose health checks are failing, or rebalancing load away from a struggling component. Kubernetes doing this for you (restarting a crashed container pod without a human ever being paged) is the most common real-world example students will have access to.
+A self-healing system continuously monitors its own health and automatically corrects problems *before* they become outages — restarting a misbehaving process, replacing a node whose health checks are failing, or rebalancing load away from a struggling component. Kubernetes doing this for you (restarting a crashed container pod without a human ever being paged) is the most common real-world example you are likely to work with.
 
 ## Proactive: Pre-emptive Migration
 

@@ -31,7 +31,7 @@ The headline result: with simple messaging, you need **more than 3× the number 
 
 ## Case Study: Bitcoin as Byzantine Fault Tolerance at Planetary Scale
 
-Bitcoin's entire security model is a practical answer to the Byzantine Generals Problem, just rebranded: thousands of anonymous nodes ("miners") need to agree on one shared transaction history, even though some of them may be actively lying to double-spend coins. Its "proof-of-work" consensus mechanism makes lying *computationally expensive* rather than relying on trust — a direct, real-world instance of Byzantine agreement that most students will have already heard of without knowing it has a name in distributed systems theory.
+Bitcoin's entire security model is a practical answer to the Byzantine Generals Problem, just rebranded: thousands of anonymous nodes ("miners") need to agree on one shared transaction history, even though some of them may be actively lying to double-spend coins. Its "proof-of-work" consensus mechanism makes lying *computationally expensive* rather than relying on trust — a direct, real-world instance of Byzantine agreement that you have probably heard of without knowing it has a name in distributed systems theory.
 
 ## Security Perspective
 
@@ -39,4 +39,4 @@ A compromised node is, almost by definition, a Byzantine node — it's still "al
 
 ---
 
-← [Contents](README.md) · [Contents](README.md) · [2. Fault Tolerance Approaches](02_fault_tolerance_approaches.md) →
+[Contents](README.md) · [2. Fault Tolerance Approaches](02_fault_tolerance_approaches.md) →
