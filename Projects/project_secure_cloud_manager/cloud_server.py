@@ -7,13 +7,16 @@ This is a teaching example, not a production cloud controller.
 import hashlib
 import hmac
 import json
+import os
 import secrets
 import socket
 import threading
 from datetime import datetime, timezone
 
-HOST = "127.0.0.1"
-PORT = 5050
+# Defaults support the local project; environment variables let the Docker version
+# bind to all container interfaces and use the Compose service name.
+HOST = os.getenv("CLOUD_HOST", "127.0.0.1")
+PORT = int(os.getenv("CLOUD_PORT", "5050"))
 TOTAL_CPU = 4
 TOTAL_MEMORY_MB = 4096
 
