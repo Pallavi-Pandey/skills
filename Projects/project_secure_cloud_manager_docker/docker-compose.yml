@@ -1,0 +1,31 @@
+services:
+  cloud-server:
+    image: secure-cloud-vm-manager:local
+    build:
+      context: ..
+      dockerfile: project_secure_cloud_manager_docker/Dockerfile
+    environment:
+      CLOUD_HOST: 0.0.0.0
+      CLOUD_PORT: 5050
+    ports:
+      - "5050:5050"
+    networks:
+      - cloud-control-network
+
+  cloud-client:
+    image: secure-cloud-vm-manager:local
+    profiles: ["client"]
+    depends_on:
+      - cloud-server
+    environment:
+      CLOUD_HOST: cloud-server
+      CLOUD_PORT: 5050
+    stdin_open: true
+    tty: true
+    command: ["python3", "cloud_client.py"]
+    networks:
+      - cloud-control-network
+
+networks:
+  cloud-control-network:
+    driver: bridge

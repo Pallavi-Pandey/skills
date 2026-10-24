@@ -1,10 +1,12 @@
 """Interactive client for the Secure Cloud VM Manager mini project."""
 
 import json
+import os
 import socket
 
-HOST = "127.0.0.1"
-PORT = 5050
+# In Docker Compose, CLOUD_HOST is set to the cloud-server service name.
+HOST = os.getenv("CLOUD_HOST", "127.0.0.1")
+PORT = int(os.getenv("CLOUD_PORT", "5050"))
 
 
 def request(reader, writer, message):

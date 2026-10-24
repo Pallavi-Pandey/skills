@@ -6,6 +6,10 @@ Build and run a tiny cloud-control-plane simulation. A client connects to a serv
 
 This is deliberately a simulation: it does **not** create real virtual machines or encrypt network traffic. It makes the concepts visible without requiring Docker, a cloud account, or a hypervisor.
 
+## Docker Version
+
+For the same project with the server and each client running in separate Docker containers on an isolated virtual network, use [the containerized version](../project_secure_cloud_manager_docker/README.md).
+
 ## Project Statement
 
 Create a small **Secure Cloud VM Manager** in Python. The program must simulate the control plane of a cloud provider: authenticated users connect to a central server and request virtual machines with CPU and memory. The server must allocate only the resources it has, protect shared state when several clients connect, enforce what each user is allowed to do, and record security-relevant actions in an audit log.
