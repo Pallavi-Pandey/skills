@@ -34,9 +34,11 @@ module_3/
 
 Start with [theory/README.md](theory/README.md) and read in order. Topics 1–5 establish the compute, memory, and storage foundations; 6–8 cover virtual networking; 9–12 describe a VM as a managed information object; and 13–14 introduce cloud computing and its capacity/cost models.
 
-## Beginner Project
+## Beginner Projects
 
-[Secure Cloud VM Manager](../Projects/project_secure_cloud_manager/README.md) is a small runnable project that combines Module 1's TCP client-server and concurrency patterns with Module 2's authentication, role-based authorization, integrity-protected audit logging, and availability/resource checks. It lives in the repository-level [`Projects/`](../Projects/) folder so course projects remain separate from module theory. It simulates a cloud VM control plane in plain Python; no Docker or cloud account is required.
+[Mini Hypervisor Simulator](../Projects/project_mini_hypervisor/README.md) is a Module-3-only project: a single Python program that models one physical host's vCPU/memory pool and the full VM lifecycle (create, start, pause, resume, stop, delete), including overcommitment, templates, and utilization reporting. No networking, security, Docker, or cloud account required — just this module's concepts, interactively.
+
+[Secure Cloud VM Manager](../Projects/project_secure_cloud_manager/README.md) is a larger runnable project that combines Module 1's TCP client-server and concurrency patterns with Module 2's authentication, role-based authorization, integrity-protected audit logging, and availability/resource checks, plus this module's VM resource allocation and lifecycle ideas. It lives in the repository-level [`Projects/`](../Projects/) folder so course projects remain separate from module theory.
 
 ## Session Breakdown
 

@@ -7,4 +7,4 @@ Distributed Computing course materials (Subject Code: 25MTCSEDE52).
 - [`module_3/`](module_3/) — Virtualization and Cloud Computing: a theory-led module covering hypervisors, resource management, virtual networks, VM information/lifecycle models, and cloud foundations.
 - [`module_4/`](module_4/) — Cloud Service and Deployment Models: a theory-led module covering IaaS, PaaS, SaaS, XaaS, and public/private/hybrid/community cloud choices.
 - [`module_5/`](module_5/) — Cloud Computing Architecture: a theory-led module covering fundamental, advanced, and specialized patterns for scalable, resilient cloud platforms.
-- [`Projects/`](Projects/) — Runnable beginner projects that apply concepts across the course, beginning with the Secure Cloud VM Manager for Module 3.
+- [`Projects/`](Projects/) — Runnable beginner projects that apply concepts across the course: the Secure Cloud VM Manager (Modules 1–3 combined) and the Mini Hypervisor Simulator (Module 3 only).
