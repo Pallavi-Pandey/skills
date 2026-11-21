@@ -20,20 +20,20 @@ The aim is not to build a real cloud platform. The aim is to demonstrate how the
 
 Complete and demonstrate the following requirements.
 
-| # | Requirement | Where it is implemented |
-|---|---|---|
-| 1 | Run a TCP server that accepts more than one client. | `cloud_server.py` |
-| 2 | Define a simple JSON request/response protocol. | `cloud_server.py`, `cloud_client.py` |
-| 3 | Authenticate users with the supplied demo accounts. | `login` action |
-| 4 | Issue a session token after a successful login; require it for later requests. | `CloudManager.login()` and `_identity()` |
-| 5 | Let a logged-in user create a VM with a name, CPU count, and memory size. | `create` command |
-| 6 | Reject requests when CPU or memory capacity is exhausted. | `create_vm()` |
-| 7 | Protect VM allocation/deletion with a lock so concurrent clients cannot corrupt the resource pool. | `self.lock` |
-| 8 | Let regular users list only their own VMs. | `list` command |
-| 9 | Let only an administrator delete VMs and read audit events. | `delete` and `audit` commands |
-| 10 | Record logins, VM creation/deletion, and denied actions in an audit log. | `_audit()` |
-| 11 | Attach an HMAC to each audit record and verify the audit log before displaying it. | `verify_audit_log()` |
-| 12 | Demonstrate the system with at least one user and one administrator session. | Terminal output / screenshots |
+| #  | Requirement                                                                                        | Where it is implemented                      |
+| -- | -------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 1  | Run a TCP server that accepts more than one client.                                                | `cloud_server.py`                          |
+| 2  | Define a simple JSON request/response protocol.                                                    | `cloud_server.py`, `cloud_client.py`     |
+| 3  | Authenticate users with the supplied demo accounts.                                                | `login` action                             |
+| 4  | Issue a session token after a successful login; require it for later requests.                     | `CloudManager.login()` and `_identity()` |
+| 5  | Let a logged-in user create a VM with a name, CPU count, and memory size.                          | `create` command                           |
+| 6  | Reject requests when CPU or memory capacity is exhausted.                                          | `create_vm()`                              |
+| 7  | Protect VM allocation/deletion with a lock so concurrent clients cannot corrupt the resource pool. | `self.lock`                                |
+| 8  | Let regular users list only their own VMs.                                                         | `list` command                             |
+| 9  | Let only an administrator delete VMs and read audit events.                                        | `delete` and `audit` commands            |
+| 10 | Record logins, VM creation/deletion, and denied actions in an audit log.                           | `_audit()`                                 |
+| 11 | Attach an HMAC to each audit record and verify the audit log before displaying it.                 | `verify_audit_log()`                       |
+| 12 | Demonstrate the system with at least one user and one administrator session.                       | Terminal output / screenshots                |
 
 ## Minimum Demonstration
 
@@ -55,19 +55,19 @@ Submit or show:
 
 ## What this connects
 
-| Earlier module | Idea used here |
-|---|---|
-| Module 1 | TCP client-server communication, a simple request protocol, one thread per client, and a lock around shared state |
-| Module 2 | Authentication, role-based authorization, resource quotas/availability, integrity with HMAC, and audit logging |
-| Module 3 | VM resource allocation, lifecycle states, CPU/memory management, and a cloud control plane |
+| Earlier module | Idea used here                                                                                                    |
+| -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Module 1       | TCP client-server communication, a simple request protocol, one thread per client, and a lock around shared state |
+| Module 2       | Authentication, role-based authorization, resource quotas/availability, integrity with HMAC, and audit logging    |
+| Module 3       | VM resource allocation, lifecycle states, CPU/memory management, and a cloud control plane                        |
 
 ## Run it
 
 These credentials are intentionally hard-coded for the exercise — never do this in a real system.
 
-| User | Password | Role | Permissions |
-|---|---|---|---|
-| `alice` | `alice123` | user | Create and list her own VMs |
+| User      | Password     | Role  | Permissions                                     |
+| --------- | ------------ | ----- | ----------------------------------------------- |
+| `alice` | `alice123` | user  | Create and list her own VMs                     |
 | `admin` | `admin123` | admin | Create, list, delete any VM, view audit records |
 
 **Step 1 — Terminal 1: start the server (leave it running)**
@@ -93,12 +93,12 @@ Password: alice123
 
 Type these **one at a time** at the `cloud>` prompt, pressing Enter and checking the reply before the next:
 
-| Type this | What it shows |
-|---|---|
-| `create study-vm 1 512` | `Created study-vm: 1 CPU, 512 MB memory` |
-| `list` | `study-vm  owner=alice  state=running  cpu=1  memory=512MB` |
-| `delete study-vm` | **denied** — alice isn't an admin |
-| `quit` | leave this client |
+| Type this                 | What it shows                                                 |
+| ------------------------- | ------------------------------------------------------------- |
+| `create study-vm 1 512` | `Created study-vm: 1 CPU, 512 MB memory`                    |
+| `list`                  | `study-vm  owner=alice  state=running  cpu=1  memory=512MB` |
+| `delete study-vm`       | **denied** — alice isn't an admin                      |
+| `quit`                  | leave this client                                             |
 
 **Step 3 — Terminal 3: start another client and log in as `admin`**
 
@@ -111,12 +111,12 @@ Username: admin
 Password: admin123
 ```
 
-| Type this | What it shows |
-|---|---|
-| `list` | now sees all VMs, not just one user's |
+| Type this           | What it shows                          |
+| ------------------- | -------------------------------------- |
+| `list`            | now sees all VMs, not just one user's  |
 | `delete study-vm` | **succeeds** — admin is allowed |
-| `audit` | the audit log, with an integrity check |
-| `quit` | leave |
+| `audit`           | the audit log, with an integrity check |
+| `quit`            | leave                                  |
 
 **Step 4 — Demonstrate concurrency (optional, but worth showing)**
 
@@ -130,13 +130,13 @@ Try `help` at the `cloud>` prompt for the full command list. **Type or paste com
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `list` | List visible virtual machines |
+| Command                       | Description                                         |
+| ----------------------------- | --------------------------------------------------- |
+| `list`                      | List visible virtual machines                       |
 | `create NAME CPU MEMORY_MB` | Create a running VM; regular users own their own VM |
-| `delete NAME` | Delete a VM (admin only) |
-| `audit` | Show the audit log (admin only) |
-| `help` / `quit` | Show commands / leave |
+| `delete NAME`               | Delete a VM (admin only)                            |
+| `audit`                     | Show the audit log (admin only)                     |
+| `help` / `quit`           | Show commands / leave                               |
 
 ## Things to notice
 
