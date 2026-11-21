@@ -36,9 +36,15 @@ Start with [theory/README.md](theory/README.md) and read in order. Topics 1–5 
 
 ## Beginner Projects
 
-[Mini Hypervisor Simulator](../Projects/project_mini_hypervisor/README.md) is a Module-3-only project: a single Python program that models one physical host's vCPU/memory pool and the full VM lifecycle (create, start, pause, resume, stop, delete), including overcommitment, templates, and utilization reporting. No networking, security, Docker, or cloud account required — just this module's concepts, interactively.
+Three runnable projects apply this module's ideas, at increasing scope. They live in the repository-level [`Projects/`](../Projects/) folder so course projects remain separate from module theory.
 
-[Secure Cloud VM Manager](../Projects/project_secure_cloud_manager/README.md) is a larger runnable project that combines Module 1's TCP client-server and concurrency patterns with Module 2's authentication, role-based authorization, integrity-protected audit logging, and availability/resource checks, plus this module's VM resource allocation and lifecycle ideas. It lives in the repository-level [`Projects/`](../Projects/) folder so course projects remain separate from module theory.
+**[Mini Hypervisor Simulator](../Projects/project_mini_hypervisor/README.md)** — Module 3 only. A single Python program that models one physical host's vCPU/memory pool and the full VM lifecycle (create, start, pause, resume, stop, delete), including overcommitment, templates, and utilization reporting. No networking, security, Docker, or cloud account required — just this module's concepts, interactively, in one class session.
+
+**[Secure Cloud VM Manager](../Projects/project_secure_cloud_manager/README.md)** — Modules 1–3 combined. Runs as a real TCP client and server (two terminals on one machine): a client logs in, then asks the server to create/list/delete VMs. It layers Module 1's networked client-server protocol and lock-protected concurrency, Module 2's authentication, role-based authorization, and HMAC-signed audit log, on top of this module's VM resource pool and capacity checks. Use this once Modules 1 and 2 have also been covered — it's the integrative, capstone-style version.
+
+**[Secure Cloud VM Manager — Docker version](../Projects/project_secure_cloud_manager_docker/README.md)** — the exact same application as above, but the server and each client run in *separate Docker containers* connected by a private Compose network, so a client reaches the server by service name (`cloud-server`) instead of `localhost`. This is the one to reach for when you specifically want Module 3's virtual networking (and the fact that it's a real network hop, not just your laptop) to be visible — at the cost of needing Docker installed.
+
+In short: start with the Mini Hypervisor Simulator right after this module's theory; move to the Secure Cloud VM Manager (plain or Docker) later, as a bigger exercise once students have also seen Modules 1 and 2.
 
 ## Session Breakdown
 
