@@ -1,6 +1,4 @@
-// Lab 05 - gRPC Calculator Service Definition
-// This .proto file defines the service interface.
-// protoc generates the Go client and server code automatically.
+﻿// Lab 05 - gRPC Calculator Service Definition
 
 syntax = "proto3";
 
@@ -8,17 +6,16 @@ option go_package = "lab05grpc/calculator";
 
 package calculator;
 
-// The Calculator service — defines what functions can be called remotely
 service Calculator {
-  // Simple unary RPC: send a request, get a response
+  // Send one calculation request and receive one response.
   rpc Calculate (CalcRequest) returns (CalcResponse);
-  
-  // Server streaming RPC: request fibonacci sequence, get numbers streamed back
+
+  // Request a Fibonacci sequence and receive streamed responses.
   rpc FibonacciStream (FibRequest) returns (stream FibResponse);
 }
 
 message CalcRequest {
-  string operation = 1;  // "add", "subtract", "multiply", "divide"
+  string operation = 1;
   double a = 2;
   double b = 3;
 }
@@ -29,7 +26,7 @@ message CalcResponse {
 }
 
 message FibRequest {
-  int32 count = 1;  // How many Fibonacci numbers to generate
+  int32 count = 1;
 }
 
 message FibResponse {

@@ -1,20 +1,7 @@
-"""
-Lab 04 - Multi-Client Chat Server (Starter Code)
-==================================================
-A TCP chat server that broadcasts messages to all connected clients.
-
-Fill in the TODOs.
+﻿"""
+Lab 04 - Multi-Client Chat Server
 """
 
-# What each import is for (docs link = where to read more):
-#   socket     -> TCP networking: the listening socket, plus one
-#                 connection per connected chat client
-#                 docs: https://docs.python.org/3/library/socket.html
-#   threading  -> runs each client's conversation on its own thread, so
-#                 the server can keep accepting new clients at any time
-#                 docs: https://docs.python.org/3/library/threading.html
-#   argparse   -> reads --port from the command line
-#                 docs: https://docs.python.org/3/library/argparse.html
 import socket
 import threading
 import argparse
@@ -24,59 +11,111 @@ class ChatServer:
     def __init__(self, host="0.0.0.0", port=8000):
         self.host = host
         self.port = port
-        self.clients = {}  # {conn: nickname}
+        self.clients = {}
         self.lock = threading.Lock()
 
     def broadcast(self, message, sender_conn=None):
-        """Send a message to all connected clients except the sender."""
-        # TODO: Iterate over self.clients
-        # TODO: For each client that is NOT sender_conn, send the message
-        # TODO: If sending fails, mark that client for removal
-        # TODO: Remove failed clients
-        # Hint: Use self.lock to protect self.clients
-        pass
-
-    def handle_client(self, conn, addr):
-        """Handle a single chat client."""
-        # Receive nickname
-        try:
-            nickname = conn.recv(1024).decode("utf-8").strip()
-        except Exception:
-            conn.close()
-            return
+        failed_clients = []
 
         with self.lock:
-            self.clients[conn] = nickname
+            clients = list(self.clients.items())
 
-        print(f"[+] {nickname} joined from {addr}")
-        self.broadcast(f"[INFO] {nickname} has joined the chat.\n", sender_conn=conn)
+        for conn, nickname in clients:
+            if conn == sender_conn:
+                continue
+            try:
+                conn.sendall(message.encode("utf-8"))
+            except OSError:
+                failed_clients.append(conn)
+
+        with self.lock:
+            for conn in failed_clients:
+                self.clients.pop(conn, None)
+                try:
+                    conn.close()
+                except OSError:
+                    pass
+
+    def handle_client(self, conn, addr):
+        nickname = ""
 
         try:
+            data = conn.recv(1024)
+            if not data:
+                return
+
+            nickname = data.decode("utf-8").strip()
+            if not nickname:
+                return
+
+            with self.lock:
+                self.clients[conn] = nickname
+
+            print(f"[+] {nickname} joined from {addr}")
+            self.broadcast(
+                f"[INFO] {nickname} has joined the chat.\n",
+                sender_conn=conn,
+            )
+
             while True:
-                data = conn.recv(1024).decode("utf-8").strip()
+                data = conn.recv(1024)
                 if not data:
                     break
-                message = f"[{nickname}] {data}\n"
-                print(f"  {message.strip()}")
-                # TODO: Broadcast this message to all OTHER clients
-                pass
-        except ConnectionResetError:
+
+                message_text = data.decode("utf-8").strip()
+                if not message_text:
+                    continue
+
+                message = f"[{nickname}] {message_text}\n"
+                print(message.strip())
+                self.broadcast(message, sender_conn=conn)
+
+        except (OSError, ConnectionError, UnicodeDecodeError):
             pass
+
         finally:
             with self.lock:
-                if conn in self.clients:
-                    del self.clients[conn]
-            conn.close()
-            print(f"[-] {nickname} left")
-            self.broadcast(f"[INFO] {nickname} has left the chat.\n")
+                was_connected = conn in self.clients
+                self.clients.pop(conn, None)
+
+            try:
+                conn.close()
+            except OSError:
+                pass
+
+            if nickname:
+                print(f"[-] {nickname} left")
+                if was_connected:
+                    self.broadcast(
+                        f"[INFO] {nickname} has left the chat.\n"
+                    )
 
     def start(self):
-        """Start the chat server."""
-        # TODO: Create TCP socket, set SO_REUSEADDR, bind, listen
-        # TODO: In a loop, accept connections
-        # TODO: For each connection, spawn a thread running handle_client
-        # IMPORTANT: Without threading, the server blocks on one client!
-        pass
+        server_socket = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM
+        )
+        server_socket.setsockopt(
+            socket.SOL_SOCKET, socket.SO_REUSEADDR, 1
+        )
+
+        try:
+            server_socket.bind((self.host, self.port))
+            server_socket.listen()
+            print(f"Chat server listening on {self.host}:{self.port}")
+
+            while True:
+                conn, addr = server_socket.accept()
+                thread = threading.Thread(
+                    target=self.handle_client,
+                    args=(conn, addr),
+                    daemon=True,
+                )
+                thread.start()
+
+        except KeyboardInterrupt:
+            print("\nShutting down chat server.")
+        finally:
+            server_socket.close()
 
 
 if __name__ == "__main__":
@@ -84,6 +123,5 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
 
-    print(f"=== Chat Server on port {args.port} ===")
     server = ChatServer(port=args.port)
     server.start()

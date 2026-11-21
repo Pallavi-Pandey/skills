@@ -1,22 +1,7 @@
-"""
-Lab 04 - Chat Client (Starter Code)
-=====================================
-Connects to the chat server and allows sending/receiving messages.
-
-Fill in the TODOs.
+﻿"""
+Lab 04 - Multi-Client Chat Client
 """
 
-# What each import is for (docs link = where to read more):
-#   socket     -> the TCP connection to the chat server
-#                 docs: https://docs.python.org/3/library/socket.html
-#   threading  -> runs receive_messages on a background thread, so you
-#                 can type a new message while incoming ones are being
-#                 printed at the same time
-#                 docs: https://docs.python.org/3/library/threading.html
-#   argparse   -> reads --host/--port/--name from the command line
-#                 docs: https://docs.python.org/3/library/argparse.html
-#   sys        -> sys.exit(0) cleanly exits the program when you quit
-#                 docs: https://docs.python.org/3/library/sys.html
 import socket
 import threading
 import argparse
@@ -24,42 +9,66 @@ import sys
 
 
 def receive_messages(sock):
-    """Background thread: continuously receive and print messages."""
+    """Receive and print messages from the server."""
     try:
         while True:
-            # TODO: Receive up to 1024 bytes from sock
-            # TODO: If no data, break (server disconnected)
-            # TODO: Decode and print the message
-            pass
+            data = sock.recv(1024)
+
+            if not data:
+                print("\nServer disconnected.")
+                break
+
+            print(data.decode("utf-8").rstrip())
+
     except (ConnectionResetError, OSError):
         print("\nDisconnected from server.")
-        sys.exit(0)
+
+    finally:
+        try:
+            sock.close()
+        except OSError:
+            pass
 
 
 def main(host, port, nickname):
-    """Connect to chat server and start chatting."""
-    # TODO: Create a TCP socket
-    # TODO: Connect to (host, port)
-    
-    # TODO: Send nickname as the first message
-    
-    print(f"Connected to {host}:{port} as '{nickname}'")
-    print("Type your messages (Ctrl+C to quit):\n")
-    
-    # TODO: Start a background thread running receive_messages(sock)
-    # Hint: Set daemon=True so it dies when main thread exits
-    
+    """Connect to the chat server and start chatting."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
+        sock.connect((host, port))
+        sock.sendall(nickname.encode("utf-8"))
+
+        print(f"Connected to {host}:{port} as '{nickname}'")
+        print("Type your messages (Ctrl+C to quit):\n")
+
+        receiver = threading.Thread(
+            target=receive_messages,
+            args=(sock,),
+            daemon=True,
+        )
+        receiver.start()
+
         while True:
             msg = input()
             if msg:
-                # TODO: Send the message to the server
-                pass
+                sock.sendall(msg.encode("utf-8"))
+
     except (KeyboardInterrupt, EOFError):
         print("\nLeaving chat...")
+
+    except (ConnectionRefusedError, OSError) as error:
+        print(f"Could not connect or send message: {error}")
+
     finally:
-        # TODO: Close the socket
-        pass
+        try:
+            sock.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+
+        try:
+            sock.close()
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":

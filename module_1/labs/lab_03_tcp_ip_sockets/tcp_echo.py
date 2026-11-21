@@ -1,52 +1,55 @@
-"""
-Lab 03 - TCP Echo Server (Starter Code)
-========================================
-A TCP echo server that returns messages in UPPERCASE.
-
-Fill in the TODOs.
+﻿"""
+Lab 03 - TCP Echo Server
+A TCP server that returns messages in UPPERCASE.
 """
 
-# What each import is for (docs link = where to read more):
-#   socket     -> low-level TCP networking for both the echo server and
-#                 the client that talks to it
-#                 docs: https://docs.python.org/3/library/socket.html
-#   threading  -> lets the server handle each connected client on its
-#                 own thread instead of one at a time
-#                 docs: https://docs.python.org/3/library/threading.html
-#   argparse   -> reads --mode/--host/--port from the command line
-#                 docs: https://docs.python.org/3/library/argparse.html
 import socket
 import threading
 import argparse
 
 
 def run_server(host="0.0.0.0", port=7000):
-    """TCP Echo Server — echoes messages back in UPPERCASE."""
-    # TODO: Create a TCP socket (AF_INET, SOCK_STREAM)
-    # TODO: Set SO_REUSEADDR
-    # TODO: Bind to (host, port)
-    # TODO: Listen with backlog=5
-    
+    """Start a TCP echo server."""
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind((host, port))
+    server.listen(5)
+
     print(f"TCP Echo Server listening on {host}:{port}")
-    
-    # TODO: In a loop:
-    #   - Accept a connection (conn, addr)
-    #   - Print "[+] Connected: {addr}"
-    #   - Spawn a thread to handle_echo(conn, addr)
-    pass
+
+    try:
+        while True:
+            conn, addr = server.accept()
+            print(f"[+] Connected: {addr}")
+            thread = threading.Thread(
+                target=handle_echo,
+                args=(conn, addr),
+                daemon=True
+            )
+            thread.start()
+    except KeyboardInterrupt:
+        print("\nServer stopping.")
+    finally:
+        server.close()
 
 
 def handle_echo(conn, addr):
-    """Handle a single client: read message, echo UPPERCASE."""
+    """Receive messages and return them in uppercase."""
     try:
         while True:
-            # TODO: Receive up to 1024 bytes
-            # TODO: If no data, break
-            # TODO: Decode to string, convert to UPPERCASE
-            # TODO: Send the uppercased message back
-            # TODO: Print what was received and what was sent back
-            pass
-    except ConnectionResetError:
+            data = conn.recv(1024)
+
+            if not data:
+                break
+
+            message = data.decode("utf-8")
+            response = message.upper()
+            conn.sendall(response.encode("utf-8"))
+
+            print(f"[{addr}] Received: {message!r}")
+            print(f"[{addr}] Sent: {response!r}")
+
+    except (ConnectionResetError, BrokenPipeError):
         pass
     finally:
         conn.close()
@@ -54,26 +57,32 @@ def handle_echo(conn, addr):
 
 
 def run_client(host, port=7000):
-    """TCP Echo Client — sends messages, receives echoes."""
-    # TODO: Create a TCP socket
-    # TODO: Connect to (host, port)
-    
+    """Send messages to the server and print its replies."""
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect((host, port))
+
     print(f"Connected to {host}:{port}. Type messages (Ctrl+C to quit):")
-    
+
     try:
         while True:
             msg = input("> ")
+
             if not msg:
                 continue
-            # TODO: Send the message (encoded)
-            # TODO: Receive the echo (up to 1024 bytes)
-            # TODO: Print the response
-            pass
+
+            client.sendall(msg.encode("utf-8"))
+            response = client.recv(1024)
+
+            if not response:
+                print("Server disconnected.")
+                break
+
+            print(f"Echo: {response.decode('utf-8')}")
+
     except (KeyboardInterrupt, EOFError):
         print("\nDisconnected.")
     finally:
-        # TODO: Close the socket
-        pass
+        client.close()
 
 
 if __name__ == "__main__":
