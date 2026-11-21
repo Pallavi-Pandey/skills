@@ -45,24 +45,24 @@ class DistributedKVNode:
         self.port = port
         self.store = {}  # Local partition only
         self.num_nodes = len(CLUSTER_NODES)
+        self.lock = threading.Lock()
 
     def get_owning_node(self, key):
         """Determine which node owns a given key using hash partitioning."""
-        # TODO: Hash the key and return hash_value % self.num_nodes
-        # Hint: Use hashlib.md5(key.encode()).hexdigest() to get a hex hash,
-        #       then int(hex_hash, 16) % self.num_nodes to get the node ID
-        pass
+        hash_value = hashlib.md5(key.encode("utf-8")).hexdigest()
+        return int(hash_value, 16) % self.num_nodes
 
     def forward_to_node(self, node_id, command):
         """Forward a command to another node and return its response."""
         host, port = CLUSTER_NODES[node_id]
         try:
-            # TODO: Create a TCP socket
-            # TODO: Connect to (host, port)
-            # TODO: Send the command (don't forget to encode + add newline)
-            # TODO: Receive and return the response (decoded)
-            # TODO: Close the socket
-            pass
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(5.0)
+            sock.connect((host, port))
+            sock.sendall((command + "\n").encode("utf-8"))
+            response = sock.recv(1024).decode("utf-8")
+            sock.close()
+            return response
         except ConnectionRefusedError:
             return f"ERROR: Node {node_id} is unreachable\n"
 
@@ -77,22 +77,24 @@ class DistributedKVNode:
             owner = self.get_owning_node(key)
 
             if owner == self.node_id:
-                # TODO: Store locally and return "OK (stored on node {self.node_id})\n"
-                pass
+                with self.lock:
+                    self.store[key] = value
+                return f"OK (stored on node {self.node_id})\n"
             else:
-                # TODO: Forward to the owning node using forward_to_node
-                pass
+                return self.forward_to_node(owner, command)
 
         elif op == "GET" and len(parts) == 2:
             key = parts[1]
             owner = self.get_owning_node(key)
 
             if owner == self.node_id:
-                # TODO: Look up locally and return value or "NOT_FOUND"
-                pass
+                with self.lock:
+                    value = self.store.get(key)
+                if value is not None:
+                    return f"{value}\n"
+                return "NOT_FOUND\n"
             else:
-                # TODO: Forward to the owning node
-                pass
+                return self.forward_to_node(owner, command)
 
         else:
             return "ERROR: Unknown command\n"
