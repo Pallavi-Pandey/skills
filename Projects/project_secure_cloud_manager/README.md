@@ -63,36 +63,70 @@ Submit or show:
 
 ## Run it
 
-Open two terminals in this directory.
-
-```bash
-# Terminal 1: start the cloud controller
-python3 cloud_server.py
-
-# Terminal 2: connect as a regular user
-python3 cloud_client.py
-```
-
-At the prompts, use either account below. These credentials are intentionally hard-coded for the exercise — never do this in a real system.
+These credentials are intentionally hard-coded for the exercise — never do this in a real system.
 
 | User | Password | Role | Permissions |
 |---|---|---|---|
 | `alice` | `alice123` | user | Create and list her own VMs |
 | `admin` | `admin123` | admin | Create, list, delete any VM, view audit records |
 
-Example regular-user session:
+**Step 1 — Terminal 1: start the server (leave it running)**
+
+```bash
+cd /Users/pallavi/pallavi_repos/skills/Projects/project_secure_cloud_manager
+python3 cloud_server.py
+```
+
+It will print log lines as clients connect — leave this terminal running for the whole demo.
+
+**Step 2 — Terminal 2: start a client and log in as `alice`**
+
+```bash
+cd /Users/pallavi/pallavi_repos/skills/Projects/project_secure_cloud_manager
+python3 cloud_client.py
+```
 
 ```text
 Username: alice
 Password: alice123
-cloud> create study-vm 1 512
-Created study-vm: 1 CPU, 512 MB memory
-cloud> list
-study-vm  owner=alice  state=running  cpu=1  memory=512MB
-cloud> quit
 ```
 
-Try `help` at the `cloud>` prompt. To test concurrency, start two clients and create VMs at the same time. The server's `threading.Lock` prevents both requests from allocating the same capacity.
+Type these **one at a time** at the `cloud>` prompt, pressing Enter and checking the reply before the next:
+
+| Type this | What it shows |
+|---|---|
+| `create study-vm 1 512` | `Created study-vm: 1 CPU, 512 MB memory` |
+| `list` | `study-vm  owner=alice  state=running  cpu=1  memory=512MB` |
+| `delete study-vm` | **denied** — alice isn't an admin |
+| `quit` | leave this client |
+
+**Step 3 — Terminal 3: start another client and log in as `admin`**
+
+```bash
+python3 cloud_client.py
+```
+
+```text
+Username: admin
+Password: admin123
+```
+
+| Type this | What it shows |
+|---|---|
+| `list` | now sees all VMs, not just one user's |
+| `delete study-vm` | **succeeds** — admin is allowed |
+| `audit` | the audit log, with an integrity check |
+| `quit` | leave |
+
+**Step 4 — Demonstrate concurrency (optional, but worth showing)**
+
+Open two client terminals at once and have both create VMs close together. The server's `threading.Lock` prevents both requests from corrupting the shared CPU/memory pool.
+
+**Step 5 — Stop the server**
+
+Back in Terminal 1, press `Ctrl+C`.
+
+Try `help` at the `cloud>` prompt for the full command list. **Type or paste commands one at a time** — don't paste a whole block of commands into the prompt at once, or output can get jumbled.
 
 ## Commands
 
